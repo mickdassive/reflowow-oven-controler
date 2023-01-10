@@ -1,7 +1,3 @@
-// reflow oven firmware
-// v0.1
-// 1/9/2023
-// Tokyo Andreana
 //{reflow oven firmware}
 //Copyright (C) {2023}  {mickmake}
 //
@@ -16,6 +12,11 @@
 //
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// reflow oven firmware
+// v0.1
+// 1/9/2023
+// Tokyo Andreana
+
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
