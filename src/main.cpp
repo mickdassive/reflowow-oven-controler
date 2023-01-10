@@ -119,6 +119,8 @@ float Kd = 0.5;  //derivative
 float DT = 0.01; //pid measurement time (seconds)
 
 // reflow cureve defines
+// times define the START time of a given curve segment
+// temp is the tempiture setpoint that the oven shold reath durring a given curve segment
 struct curve{
   int preheat_time;  // miliseconds
   int preheat_temp;  // deg c
@@ -130,10 +132,11 @@ struct curve{
   int reflow_temp;  // deg c
   int cooling_time;  // miliseconds
   int cooling_temp;  // deg c
-  int end_time;
+  int end_time;  // miliseconds
   
 };
 
+// cuve setup {preheat_time, preheat_temp, soak_time, soak_temp, ramp_to_reflow_time, ramp_to_reflow_temp, reflow_time, reflow_temp, cooling_time, cooling_temp, end_time}
 struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 235, 210000, 25, 327000};
 
 
@@ -186,7 +189,7 @@ const uint8_t disp_down = 0x80;
 const uint8_t disp_up_rst = 0x01;
 const uint8_t disp_up = 0x81;
 
-// cahr bytes for 7 segment display
+// char bytes for 7 segment display
 // dp is autimaticly attched durring the disp_write function
 // segment map {0b, DP, A, B, C, D, E, F, G}
 //   a
@@ -378,6 +381,7 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
 }
 
 // debounced buttion input  (might not work as intened probly need to come back to this)
+// butt_pin: struct defines the pin to read
 int debounce(struct pin butt_pin) {
   int state = io_call(butt_pin, read, read_mode);
   delay(50);  // debounce sampel time
@@ -404,6 +408,7 @@ float current_temp() {
 }
 
 // pid contoll function
+// setpoint: target tempiture
 float pid(float setpoint) {
   float error = setpoint - current_temp ();
   float integral =  0.0;
@@ -423,7 +428,8 @@ float pid(float setpoint) {
 }
 
 // display write function
-//currently only supports max 16 cahricter input as of right now will add sepping at a later time
+// to_write: string to be witten to the display
+// currently only supports max 16 cahricter input as of right now will add sepping at a later time
 char disp_write(char* to_write) {
 
   Serial.println("display write called");
@@ -578,7 +584,7 @@ void disp_write_2_line(float line_1, float line_2) {
 }
 
 // display blank
-// just writes 0s to all digit registers on both displays
+// just writes 0s to all digit registers on both display drivers resulting in no segments being on
 void disp_blank() {
 
   Serial.println("display blanked");
@@ -650,6 +656,7 @@ void disp_blank() {
 }
 
 // heater control
+// input: takes a float input from -1 to 1 and based on that turns on or off the heaters
 void heater_control (float input) {
   if (input > 0 && input < 0.5) {
     io_call (htr_1, write, high);
@@ -665,7 +672,11 @@ void heater_control (float input) {
 }
 
 // reflow control function
+// curve_needed: struct of reflow cure to follow
 int reflow_control (struct curve curve_needed) {
+
+  // turn on oven fan
+  io_call(fan, write, high);
 
   Serial.println("refow loop enterd");
 
@@ -722,13 +733,15 @@ int reflow_control (struct curve curve_needed) {
 
     }
 
-    if (io_call(ent_btn, read, read_mode) == LOW) {
+    if (io_call(ent_btn, read, read_mode) == LOW) { // exit reflow loop early if 'ent' buttion is held for 3 seconds
       if (!exit_state) {
         stop_time = millis();
         exit_state = true;
       } else {
         if ((millis() - stop_time) >= 3000) {
-          return 0;
+          // turn off oven fan
+          io_call(fan, write, low);
+          return 0;          
         }
       }
 
@@ -741,6 +754,8 @@ int reflow_control (struct curve curve_needed) {
     
   }
   
+  // turn off oven fan
+  io_call(fan, write, low);
   
   return 0;
     
@@ -748,12 +763,12 @@ int reflow_control (struct curve curve_needed) {
 
 
 void setup() {
+
   // pin modes for onboard io
   pinMode(htr_1.pin_number, OUTPUT);  
   pinMode(htr_2.pin_number, OUTPUT);  
   pinMode(fan.pin_number, OUTPUT);
   pinMode(io_int.pin_number, INPUT);
-
 
   // start serial
   Serial.begin(115200);
@@ -825,6 +840,8 @@ void setup() {
     Serial.println("WIFI connection lost");
   } 
 
+  // might need to pull out of shutdown mode before self address??????????????
+
   // display self address command
   Wire.beginTransmission(disp_base_add_w);
   Wire.write(disp_self_add);                  
@@ -878,7 +895,6 @@ void setup() {
   Wire.write(0b10000000);  // 9/16 duty cycle
   Wire.endTransmission();
   Serial.println("display intensity set");
-
 
   // display visual self test
   Wire.beginTransmission(disp_1_add_w);
