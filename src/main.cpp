@@ -385,7 +385,7 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
 int debounce(struct pin butt_pin) {
   int state = io_call(butt_pin, read, read_mode);
   delay(50);  // debounce sampel time
-  if (state == HIGH) {
+  if (state == HIGH && io_call(butt_pin, read, read_mode)) {
     return (HIGH);
   } else {
     return (LOW);
@@ -394,14 +394,17 @@ int debounce(struct pin butt_pin) {
 
 // read k-type and return celcus
 float current_temp() {
-  int number_of_readings = 10;
+  int number_of_readings = 10; // number or readings to avrige for mesurement
   float total_readings = 0;
+
   for (int i = 0; i < number_of_readings; i++) {
-    total_readings = total_readings + analogRead (adc_pin);
+    total_readings = total_readings + analogRead (adc_pin);  // make readings
     delay (5);
   }
-  total_readings = total_readings / number_of_readings;
-  float voltage = total_readings * 5.0 / 1023.0;
+
+  total_readings = total_readings / number_of_readings; // avrige the readings
+  
+  float voltage = total_readings * 5.0 / 1023.0;// convert to celcius
   float temp = (voltage / 0.005) + adc_offset;
   return (temp);
 
@@ -448,6 +451,8 @@ char disp_write(char* to_write) {
   
 
   for (int i = 0; i < to_write_len; i++) {  // load input sting to array
+    // will load and given cahricter of the input sting in to an array
+    // includes logic to bind the approprite designater for spaces decimal points dashes and qwestion marks
     if (to_write[i] == '.') {
       decimal_counter++;
       decimal_pos[(i - 1) - decimal_counter] = 1;
@@ -947,12 +952,14 @@ void loop() {
   if (menu_opt == 0) {
     disp_write("63 37 curve");
     Serial.println("dispwrite?");
+    delay(1000);
     if (debounce(ent_btn) == LOW) {
       reflow_control(curve_63_37);
     }
   } else if (menu_opt == 1) {
     disp_write("display ip?");
     Serial.println("dispwrite?1");
+    delay (1000);
     if (debounce(ent_btn) == LOW) {
       IPAddress ip = WiFi.localIP();
       String ip_str = ip.toString();
