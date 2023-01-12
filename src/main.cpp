@@ -417,6 +417,8 @@ float pid(float setpoint) {
   float integral =  0.0;
   float derivitve = 0.0;
   float lasterror = 0.0;
+  int high_range = 100;
+  int low_range = -100;
 
   integral += error * DT;
   derivitve = (error - lasterror) / DT;
@@ -424,7 +426,8 @@ float pid(float setpoint) {
 
   float output = Kp * error + Ki * integral + Kd * derivitve;
 
-  output = constrain (output, -1.0, 1.0);
+  //output = constrain (output, -1.0, 1.0);
+  output = map (output, low_range, high_range, -1, 1);
 
   return (output);
 
