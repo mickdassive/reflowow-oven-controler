@@ -404,8 +404,8 @@ float current_temp() {
 
   total_readings = total_readings / number_of_readings; // avrige the readings
   
-  float voltage = total_readings * 5.0 / 1023.0;// convert to celcius
-  float temp = (voltage / 0.005) + adc_offset;
+  float voltage = total_readings * 1 / 1023.0;// convert to voltage    (the multiplication componat is the source voltage with is currently 1)
+  float temp = (voltage / 0.005) + adc_offset;  // covert voltage reading of the adc to celcus
   return (temp);
 
 }
