@@ -110,7 +110,7 @@ enum high_low {
 
 //adc define
 int adc_pin = A0;
-float adc_offset = -12;
+float adc_offset = -122;
 
 //pid gain
 float Kp = 1;  //proportional
@@ -399,7 +399,7 @@ float current_temp() {
 
   for (int i = 0; i < number_of_readings; i++) {
     total_readings = total_readings + analogRead (adc_pin);  // make readings
-    delay (5);
+    delay (0);
   }
 
   total_readings = total_readings / number_of_readings; // avrige the readings
@@ -780,8 +780,7 @@ void setup() {
 
   // start serial
   Serial.begin(115200);
-  delay(500);
-  Serial.flush();
+  Serial.println(" ");
   Serial.println(" ");
   Serial.println("serial started");
 
@@ -812,7 +811,7 @@ void setup() {
   Wire.write(0b01110000);
   Wire.endTransmission();
   Serial.println("io expander pin modes set");
-  
+  /*
   // start wifi
   io_call(wifi_led_r, write, high);
   Serial.println("WIFI connecting");
@@ -847,8 +846,14 @@ void setup() {
     Serial.println(' ');
     Serial.println("WIFI connection lost");
   } 
-
+  */
   // might need to pull out of shutdown mode before self address??????????????
+
+  Wire.beginTransmission(disp_base_add_w);
+  Wire.write(disp_shutdown);
+  Wire.write(disp_up_rst);
+  Wire.endTransmission();
+
 
   // display self address command
   Wire.beginTransmission(disp_base_add_w);
@@ -857,19 +862,23 @@ void setup() {
   Wire.endTransmission();
   Serial.println("display self addressed");
 
+  
+
+
+  
   // pull display 1 out of shutdown mode
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_shutdown);
-  Wire.write(disp_up_rst);
+  Wire.write(disp_up);
   Wire.endTransmission();
 
   // pull display 2 out of shutdown mode
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_shutdown);
-  Wire.write(disp_up_rst);
+  Wire.write(disp_up);
   Wire.endTransmission();
   Serial.println("display pulled out of shut down");
-
+  
   //diplay decode mode command
   Wire.beginTransmission(disp_1_add_w);  //display dvr 1
   Wire.write(disp_decode_mode);
@@ -904,7 +913,7 @@ void setup() {
   Wire.endTransmission();
   Serial.println("display intensity set");
 
-  // display visual self test
+  // display self test
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_test);
   Wire.write(0b10000000);
@@ -923,6 +932,9 @@ void setup() {
   Wire.write(0b00000000);
   Wire.endTransmission();
   Serial.println("display self test complete");
+
+  disp_write("8888888888888888");
+  delay(10000);
  
 }
 
@@ -977,6 +989,7 @@ void loop() {
   Serial.println(HEX, read_current_io_state(1));
 
   Serial.println("main loop");
+  Serial.println(current_temp());
   delay (1000);
   
 
