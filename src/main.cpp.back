@@ -28,92 +28,6 @@
 #include <string>
 #include <iostream>
 
-/*
-void setup() {
-
-
-  // start serial
-  Serial.begin(115200);
-  Serial.println(" ");
-  Serial.println(" ");
-  Serial.println("serial started");
-
-  // start i2c
-  Wire.begin(4, 2);
-  Serial.println("i2c started");
-  
-  // io epander init
-  Wire.beginTransmission(0x40);
-  Wire.write(0x06);
-  Wire.write(0x00);
-  Wire.endTransmission();
-
-
-  Wire.beginTransmission(0x40);
-  Wire.write(0x02);
-  Wire.write(0xff);
-  Wire.endTransmission();
-  
-  
-
-}
-
-
-
-
-void loop() {
- 
-Serial.println("main");
-delay(1000);
-
-}
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//{reflow oven firmware}
-//Copyright (C) {2023}  {mickmake}
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// reflow oven firmware
-// v0.1
-// 1/9/2023
-// Tokyo Andreana
-
-
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-#include <LittleFS.h>
-#include <Wire.h>
-#include <stdint.h>
-#include <string.h>
-#include <string>
-#include <iostream>
-
 
 const char* ssid = "xxxx";
 const char* password = "xxxx";
@@ -1085,7 +999,7 @@ void loop() {
   Serial.println("main loop");
   */
   Serial.println(current_temp());
-  delay (100);
+  delay (1000);
   Serial.println(io_call(ent_btn, read, read_mode));
   io_call(wifi_led_g, write, low);
 
