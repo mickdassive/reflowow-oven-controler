@@ -42,7 +42,7 @@ void setup() {
 
   // start i2c
   Wire.begin(4, 2);
-  Wire.setClock(10);
+  Wire.setClock(100);
   Serial.println("i2c started");
 
   // Configure all pins of the I/O expander as inputs
@@ -56,20 +56,20 @@ void setup() {
   Wire.write(0xff); // Set all bits to 1 for input
   Wire.endTransmission();
 
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4A); 
   Wire.write(0x00); 
   Wire.endTransmission();
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4B); 
   Wire.write(0x00); 
   Wire.endTransmission();
   // Set interrupt to trigger on any change in pin state
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4E); 
   Wire.write(0x00); 
   Wire.endTransmission();
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4F); 
   Wire.write(0x00); 
   Wire.endTransmission();
@@ -77,16 +77,16 @@ void setup() {
 
 void loop() {
   // Read values from both ports of the I/O expander
-  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x00); // Input register for port 0
   Wire.endTransmission();
-  Wire.requestFrom(0x41, 1);
+  Wire.requestFrom(0x21, 1);
   byte port0 = Wire.read();
 
-  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x01); // Input register for port 1
   Wire.endTransmission();
-  Wire.requestFrom(0x41, 1);
+  Wire.requestFrom(0x21, 1);
   byte port1 = Wire.read();
 
   // Print values to the terminal
@@ -95,7 +95,7 @@ void loop() {
   Serial.print("Port 1: ");
   Serial.println(port1, BIN);
 
-  delay(0);
+  delay(100);
 }
 
 
