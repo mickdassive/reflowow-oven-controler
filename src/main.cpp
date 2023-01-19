@@ -46,56 +46,75 @@ void setup() {
   Serial.println("i2c started");
 
   // Configure all pins of the I/O expander as inputs
-  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x06); // Configuration register for port 0
   Wire.write(0xff); // Set all bits to 1 for input
   Wire.endTransmission();
 
-  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x07); // Configuration register for port 1
   Wire.write(0xff); // Set all bits to 1 for input
   Wire.endTransmission();
 
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4A); 
   Wire.write(0x00); 
   Wire.endTransmission();
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4B); 
   Wire.write(0x00); 
   Wire.endTransmission();
   // Set interrupt to trigger on any change in pin state
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4E); 
   Wire.write(0x00); 
   Wire.endTransmission();
-  Wire.beginTransmission(0x40);
+  Wire.beginTransmission(0x20);
   Wire.write(0x4F); 
   Wire.write(0x00); 
   Wire.endTransmission();
 }
 
-void loop() {
-  // Read values from both ports of the I/O expander
-  Wire.beginTransmission(0x40); // I/O expander address
-  Wire.write(0x00); // Input register for port 0
-  Wire.endTransmission();
-  Wire.requestFrom(0x41, 1);
-  byte port0 = Wire.read();
+void loop()
+{
+  byte error, address;
+  int nDevices;
 
-  Wire.beginTransmission(0x40); // I/O expander address
-  Wire.write(0x01); // Input register for port 1
-  Wire.endTransmission();
-  Wire.requestFrom(0x41, 1);
-  byte port1 = Wire.read();
+  Serial.println("Scanning...");
 
-  // Print values to the terminal
-  Serial.print("Port 0: ");
-  Serial.println(port0, BIN);
-  Serial.print("Port 1: ");
-  Serial.println(port1, BIN);
+  nDevices = 0;
+  for(address = 1; address < 127; address++ )
+  {
+    // The i2c_scanner uses the return value of
+    // the Write.endTransmisstion to see if
+    // a device did acknowledge to the address.
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
 
-  delay(1000);
+    if (error == 0)
+    {
+      Serial.print("I2C device found at address 0x");
+      if (address<16)
+        Serial.print("0");
+      Serial.print(address,HEX);
+      Serial.println("  !");
+
+      nDevices++;
+    }
+    else if (error==4)
+    {
+      Serial.print("Unknown error at address 0x");
+      if (address<16)
+        Serial.print("0");
+      Serial.println(address,HEX);
+    }    
+  }
+  if (nDevices == 0)
+    Serial.println("No I2C devices found\n");
+  else
+    Serial.println("done\n");
+
+  delay(5000);           // wait 5 seconds for next scan
 }
 
 
