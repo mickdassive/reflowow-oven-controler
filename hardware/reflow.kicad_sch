@@ -2844,10 +2844,10 @@
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (pin "1" (uuid f1f29d85-de4d-4dfb-bd6d-8fe93c6df1b8))
-    (pin "2" (uuid 985a6b0c-9383-4623-8310-d7fcce1fc105))
-    (pin "2" (uuid 985a6b0c-9383-4623-8310-d7fcce1fc105))
-    (pin "3" (uuid 0c5bdab2-7ef5-4c57-b260-f0f8021db83a))
-    (pin "3" (uuid 0c5bdab2-7ef5-4c57-b260-f0f8021db83a))
+    (pin "2" (uuid 985a6b0c-9383-4623-8310-d7fcce1fc106))
+    (pin "2" (uuid 985a6b0c-9383-4623-8310-d7fcce1fc106))
+    (pin "3" (uuid 0c5bdab2-7ef5-4c57-b260-f0f8021db83b))
+    (pin "3" (uuid 0c5bdab2-7ef5-4c57-b260-f0f8021db83b))
   )
 
   (symbol (lib_name "BUK7M6R3-40EX_2") (lib_id "Transistor_FET:BUK7M6R3-40EX") (at 68.58 52.07 90) (mirror x) (unit 1)
@@ -2862,10 +2862,10 @@
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (pin "1" (uuid c4e8ac07-d5ef-495f-9585-9b91509a4138))
-    (pin "2" (uuid 109a4fd4-cb6a-4f81-95ed-723441642be6))
-    (pin "2" (uuid 109a4fd4-cb6a-4f81-95ed-723441642be6))
-    (pin "3" (uuid 4a0eade5-5cab-43ae-895e-43eb864dd7d5))
-    (pin "3" (uuid 4a0eade5-5cab-43ae-895e-43eb864dd7d5))
+    (pin "2" (uuid 109a4fd4-cb6a-4f81-95ed-723441642be7))
+    (pin "2" (uuid 109a4fd4-cb6a-4f81-95ed-723441642be7))
+    (pin "3" (uuid 4a0eade5-5cab-43ae-895e-43eb864dd7d6))
+    (pin "3" (uuid 4a0eade5-5cab-43ae-895e-43eb864dd7d6))
   )
 
   (symbol (lib_id "Diode:1N4151") (at 43.18 163.83 0) (unit 1)
@@ -3335,10 +3335,10 @@
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (pin "1" (uuid 00afe7a9-c92b-4f66-baa0-86a564c3a20a))
-    (pin "2" (uuid 129ace5d-5eb4-46b7-91c0-bb86493df722))
-    (pin "2" (uuid 129ace5d-5eb4-46b7-91c0-bb86493df722))
-    (pin "3" (uuid 80695930-d861-4b99-b780-621d10ffce0b))
-    (pin "3" (uuid 80695930-d861-4b99-b780-621d10ffce0b))
+    (pin "2" (uuid 129ace5d-5eb4-46b7-91c0-bb86493df723))
+    (pin "2" (uuid 129ace5d-5eb4-46b7-91c0-bb86493df723))
+    (pin "3" (uuid 80695930-d861-4b99-b780-621d10ffce0c))
+    (pin "3" (uuid 80695930-d861-4b99-b780-621d10ffce0c))
   )
 
   (symbol (lib_id "Device:R") (at 156.21 33.02 0) (unit 1)
@@ -3472,10 +3472,10 @@
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (pin "1" (uuid a3f11c97-356d-45e3-862e-8b10935b2ca2))
-    (pin "2" (uuid 9948f0ed-0a4b-49bb-9d7b-f92df6339000))
-    (pin "2" (uuid 9948f0ed-0a4b-49bb-9d7b-f92df6339000))
-    (pin "3" (uuid 341de577-c1a7-49ec-8969-5a672a129e4f))
-    (pin "3" (uuid 341de577-c1a7-49ec-8969-5a672a129e4f))
+    (pin "2" (uuid 9948f0ed-0a4b-49bb-9d7b-f92df6339001))
+    (pin "2" (uuid 9948f0ed-0a4b-49bb-9d7b-f92df6339001))
+    (pin "3" (uuid 341de577-c1a7-49ec-8969-5a672a129e50))
+    (pin "3" (uuid 341de577-c1a7-49ec-8969-5a672a129e50))
   )
 
   (symbol (lib_id "Diode:1N4151") (at 43.18 101.6 0) (unit 1)
@@ -3904,6 +3904,12 @@
     (path "/e4db0eb0-6633-412c-9d75-8a4861237f43"
       (reference "#PWR063") (unit 1) (value "GND") (footprint "")
     )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/a0063920-4e58-485d-a493-ad99826ab09a"
+      (reference "#PWR064") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/48616144-5aa5-4180-bdee-87ef04d7300c"
+      (reference "#PWR065") (unit 1) (value "GND") (footprint "")
+    )
     (path "/9e9c5bab-137b-4e96-8dfe-18bd3679817b/d00f1159-f18e-4b48-8830-ff25e7d44275"
       (reference "#PWR0101") (unit 1) (value "GND") (footprint "")
     )
@@ -4173,6 +4179,18 @@
     )
     (path "/9038edf0-db9c-4acb-bfb3-57c9af7f3c02"
       (reference "R25") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0603_1608Metric")
+    )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/6350b5fb-1614-441d-8fee-93c96ffd3d5b"
+      (reference "R26") (unit 1) (value "2K2") (footprint "Resistor_SMD:R_0603_1608Metric")
+    )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/6cc32bed-ed2d-4dca-b240-3e58b8e8e294"
+      (reference "R27") (unit 1) (value "660R") (footprint "Resistor_SMD:R_0603_1608Metric")
+    )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/96d01f24-0b0d-4770-8f47-a2496032b930"
+      (reference "R28") (unit 1) (value "2K2") (footprint "Resistor_SMD:R_0603_1608Metric")
+    )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/36920a73-ebb2-4c7b-a2e5-9932a24f9859"
+      (reference "R29") (unit 1) (value "660R") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/9e9c5bab-137b-4e96-8dfe-18bd3679817b/f3906cfe-d892-4654-9be4-861ac908d343"
       (reference "SW1") (unit 1) (value "UP") (footprint "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB")
