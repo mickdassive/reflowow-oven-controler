@@ -18,6 +18,7 @@
 // Tokyo Andreana
 
 
+
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -28,10 +29,11 @@
 #include <string>
 #include <iostream>
 
-/*
+
+
+
+
 void setup() {
-
-
   // start serial
   Serial.begin(115200);
   Serial.println(" ");
@@ -40,35 +42,62 @@ void setup() {
 
   // start i2c
   Wire.begin(4, 2);
+  Wire.setClock(100);
   Serial.println("i2c started");
-  
-  // io epander init
-  Wire.beginTransmission(0x40);
-  Wire.write(0x06);
-  Wire.write(0x00);
+
+  // Configure all pins of the I/O expander as inputs
+  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.write(0x06); // Configuration register for port 0
+  Wire.write(0xff); // Set all bits to 1 for input
   Wire.endTransmission();
 
+  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.write(0x07); // Configuration register for port 1
+  Wire.write(0xff); // Set all bits to 1 for input
+  Wire.endTransmission();
 
   Wire.beginTransmission(0x40);
-  Wire.write(0x02);
-  Wire.write(0xff);
+  Wire.write(0x4A); 
+  Wire.write(0x00); 
   Wire.endTransmission();
-  
-  
-
+  Wire.beginTransmission(0x40);
+  Wire.write(0x4B); 
+  Wire.write(0x00); 
+  Wire.endTransmission();
+  // Set interrupt to trigger on any change in pin state
+  Wire.beginTransmission(0x40);
+  Wire.write(0x4E); 
+  Wire.write(0x00); 
+  Wire.endTransmission();
+  Wire.beginTransmission(0x40);
+  Wire.write(0x4F); 
+  Wire.write(0x00); 
+  Wire.endTransmission();
 }
-
-
-
 
 void loop() {
- 
-Serial.println("main");
-delay(1000);
+  // Read values from both ports of the I/O expander
+  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.write(0x00); // Input register for port 0
+  Wire.endTransmission();
+  Wire.requestFrom(0x41, 1);
+  byte port0 = Wire.read();
 
+  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.write(0x01); // Input register for port 1
+  Wire.endTransmission();
+  Wire.requestFrom(0x41, 1);
+  byte port1 = Wire.read();
+
+  // Print values to the terminal
+  Serial.print("Port 0: ");
+  Serial.println(port0, BIN);
+  Serial.print("Port 1: ");
+  Serial.println(port1, BIN);
+
+  delay(1000);
 }
 
-*/
 
 
 
@@ -78,7 +107,7 @@ delay(1000);
 
 
 
-
+/*
 
 
 
@@ -196,7 +225,7 @@ enum high_low {
 
 //adc define
 int adc_pin = A0;
-float adc_offset = 0;
+float adc_offset = -9;  //offset in deg c to copensete for termocuppel inconsisntancy
 
 //pid gain
 float Kp = 1;  //proportional
@@ -490,7 +519,7 @@ float current_temp() {
 
   total_readings = total_readings / number_of_readings; // avrige the readings
   
-  float voltage = total_readings * 1 / 1023.0;// convert to voltage    (the multiplication componat is the source voltage with is currently 1v)
+  float voltage = total_readings * 3.3 / 1023.0;// convert to voltage    3.3 is the componat that copenstaes gfor the voltage devider allowing the adc to have a lager tepiture range
   float temp = (voltage / 0.005) + adc_offset;  // covert voltage reading of the adc to celcus
   return (temp);
 
@@ -856,6 +885,8 @@ int reflow_control (struct curve curve_needed) {
 }
 
 
+8//*
+
 void setup() {
 
   // pin modes for onboard io
@@ -904,7 +935,7 @@ void setup() {
 
 
 
-  /*
+  
   // start wifi
   io_call(wifi_led_r, write, high);
   Serial.println("WIFI connecting");
@@ -1028,14 +1059,14 @@ void setup() {
 
   disp_write("8888888888888888");
   //delay(10000);
-  */
+  
 }
 
-
+*//*
 
 
 void loop() {
-  /*
+  
 
   int menu_opt = 0;
   int menu_opt_count = 1;  // rember indexing starts at 0 stupid
@@ -1083,9 +1114,9 @@ void loop() {
   Serial.println(HEX, read_current_io_state(1));
 
   Serial.println("main loop");
-  */
+  
   Serial.println(current_temp());
-  delay (100);
+  delay (1000);
   Serial.println(io_call(ent_btn, read, read_mode));
   io_call(wifi_led_g, write, low);
 
@@ -1094,3 +1125,6 @@ void loop() {
 
 
 }
+
+
+*/
