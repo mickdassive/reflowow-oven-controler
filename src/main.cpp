@@ -17,7 +17,7 @@
 // 1/9/2023
 // Tokyo Andreana
 
-
+/*
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -28,6 +28,53 @@
 #include <string.h>
 #include <string>
 #include <iostream>
+
+
+// I2C address of the I/O expander
+const uint8_t IO_EXPANDER_ADDRESS = 0x20;
+
+void setup() {
+  // start serial
+  Serial.begin(115200);
+  Serial.println(" ");
+  Serial.println(" ");
+  Serial.println("serial started");
+
+  // start i2c
+  Wire.begin(4, 2);
+  Wire.setClock(10);
+  Serial.println("i2c started");
+
+
+}
+
+void loop() {
+  // Read state of port 0
+  Wire.beginTransmission(0x20);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.requestFrom(0x20, 1);
+  byte port0 = Wire.read();
+
+  // Read state of port 1
+  Wire.beginTransmission(0x20);
+  Wire.write(0x01);
+  Wire.endTransmission();
+  Wire.requestFrom(0x20, 1);
+  byte port1 = Wire.read();
+
+  // Output state of ports to terminal
+
+  Serial.print("Port 0: ");
+  Serial.println(port0, BIN);
+  Serial.print("Port 1: ");
+  Serial.println(port1, BIN);
+
+
+  delay(1000);
+}
+
+
 
 
 
@@ -42,60 +89,54 @@ void setup() {
 
   // start i2c
   Wire.begin(4, 2);
-  Wire.setClock(100);
+  Wire.setClock(10);
   Serial.println("i2c started");
 
+
+
   // Configure all pins of the I/O expander as inputs
-  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x06); // Configuration register for port 0
-  Wire.write(0xff); // Set all bits to 1 for input
+  Wire.write(0x00); // Set all bits to 1 for input
   Wire.endTransmission();
 
-  Wire.beginTransmission(0x40); // I/O expander address
+  Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x07); // Configuration register for port 1
-  Wire.write(0xff); // Set all bits to 1 for input
+  Wire.write(0x00); // Set all bits to 1 for input
   Wire.endTransmission();
 
-  Wire.beginTransmission(0x20);
-  Wire.write(0x4A); 
-  Wire.write(0x00); 
-  Wire.endTransmission();
-  Wire.beginTransmission(0x20);
-  Wire.write(0x4B); 
-  Wire.write(0x00); 
-  Wire.endTransmission();
-  // Set interrupt to trigger on any change in pin state
-  Wire.beginTransmission(0x20);
-  Wire.write(0x4E); 
-  Wire.write(0x00); 
-  Wire.endTransmission();
-  Wire.beginTransmission(0x20);
-  Wire.write(0x4F); 
-  Wire.write(0x00); 
-  Wire.endTransmission();
+
 }
 
 void loop() {
-  // Read values from both ports of the I/O expander
-  Wire.beginTransmission(0x20); // I/O expander address
-  Wire.write(0x00); // Input register for port 0
+
+  // Set all outputs of port 0 to high
+  Wire.beginTransmission(0x20);
+  Wire.write(0x02); // Output register address
+  Wire.write(0xff); // Set all bits to high
   Wire.endTransmission();
-  Wire.requestFrom(0x21, 1);
-  byte port0 = Wire.read();
-
-  Wire.beginTransmission(0x20); // I/O expander address
-  Wire.write(0x01); // Input register for port 1
+  Wire.beginTransmission(0x20);
+  Wire.write(0x03); // Output register address
+  Wire.write(0xff); // Set all bits to high
   Wire.endTransmission();
-  Wire.requestFrom(0x21, 1);
-  byte port1 = Wire.read();
+  
+ 
+  delay(1000);
 
-  // Print values to the terminal
-  Serial.print("Port 0: ");
-  Serial.println(port0, BIN);
-  Serial.print("Port 1: ");
-  Serial.println(port1, BIN);
+  // Set all outputs of port 0 to low
+  Wire.beginTransmission(0x20);
+  Wire.write(0x02); // Output register address
+  Wire.write(0x00); // Set all bits to low
+  Wire.endTransmission();
+  Wire.beginTransmission(0x20);
+  Wire.write(0x03); // Output register address
+  Wire.write(0x00); // Set all bits to low
+  Wire.endTransmission();
 
-  delay(100);
+
+  delay(1000);
+
+
 }
 
 
@@ -103,11 +144,97 @@ void loop() {
 
 
 
+if (read_write == write) {
+       // If the pin is offboard, check if we need to read or write
+      if (pin_needed.port == 0) { //write to port 0
+      // If we need to write, check which port the pin is on
+        uint8_t current = read_current_io_state(pin_needed.port);
+        if (high_low == high) {
+          uint8_t highval = current | pin_needed.mask;
+          Wire.beginTransmission(iox_write_add);
+          Wire.write(iox_output_port_0);
+          
+          Wire.write(highval); //not sure chek this
+          Wire.endTransmission();
+        } else if (high_low == low) {
+          uint8_t lowval = current & pin_needed.mask;
+          Wire.beginTransmission(iox_write_add);
+          Wire.write(iox_output_port_0);
+          Wire.write(lowval);
+          Wire.endTransmission();
+        } else {
+          //need something here probly
+        }
+      } else if (pin_needed.port == 1) { // write to port 1
+      // If we need to write, check which port the pin is on
+        uint8_t current = read_current_io_state(pin_needed.port);
+        if (high_low == high) {
+          uint8_t highval = current | pin_needed.mask;
+          Wire.beginTransmission(iox_write_add);
+          Wire.write(iox_output_port_1);
+          Wire.write(highval); //not sure chek this
+          Wire.endTransmission();
+        } else if (high_low == low) {
+          uint8_t lowval = current | pin_needed.mask;
+          Wire.beginTransmission(iox_write_add);
+          Wire.write(iox_output_port_1);
+          Wire.write(lowval); //not sure chek this
+          Wire.endTransmission();
+        } else {
+          //need something here probly
+        }
+      } else {
+        //need something here probly
+      }
+    } else if (read_write == read) {
+      if (pin_needed.port == 0) {  // write read from port 0
+      // If we need to read, check which port the pin is on
+        Wire.beginTransmission (iox_write_add);
+        Wire.write(iox_input_port_0);
+        Wire.endTransmission();
+
+        Wire.requestFrom(iox_write_add, 1); // read from port
+        uint8_t readval = 0b0;
+        
+        readval = Wire.read();
+        
+        if (pin_needed.mask & readval == 0){
+          return(LOW);
+        } else {
+          return(HIGH);
+        }
+        
+      } else if (pin_needed.port == 1) {
+        // If we need to read, check which port the pin is on
+        Wire.beginTransmission (iox_write_add);
+        Wire.write(iox_input_port_1);
+        Wire.endTransmission();
+
+        Wire.requestFrom(iox_write_add, 1);  //read from port
+        uint8_t readval = 0b0;
+        
+        readval = Wire.read();
+        
+        if (pin_needed.mask & readval == 0) {
+          return(LOW);
+        } else {
+          return(HIGH);
+        }
+
+      }
+    }
 
 
 
 
-/*
+*/
+
+
+
+
+
+
+
 
 
 
@@ -150,31 +277,31 @@ const char* password = "xxxx";
 ESP8266WebServer server(80);
 
 //iox defines
-const uint8_t iox_read_add = 0b01000001;
-const uint8_t iox_write_add = 0b01000000;
-const uint8_t iox_input_port_0 = 0b00000000;
-const uint8_t iox_input_port_1 = 0b00000001;
-const uint8_t iox_output_port_0 = 0b00000010;
-const uint8_t iox_output_port_1 = 0b00000011;
-const uint8_t iox_pol_inv_port_0 = 0b00000100;
-const uint8_t iox_pol_inv_port_1 = 0b00000101;
-const uint8_t iox_config_port_0 = 0b00000110;
-const uint8_t iox_config_port_1 = 0b00000111;
-const uint8_t iox_drive_strength_register_00 = 0b01000000;
-const uint8_t iox_drive_strenght_register_01 = 0b01000001;
-const uint8_t iox_drive_strenght_register_10 = 0b01000010;
-const uint8_t iox_drive_strenght_register_11 = 0b01000011;
-const uint8_t iox_in_latch_register_0 = 0b01000100;
-const uint8_t iox_in_ltach_register_1 =0b01000101;
-const uint8_t iox_pull_up_down_en_register_0 = 0b01000110;
-const uint8_t iox_pull_up_down_en_register_1 = 0b01000111;
-const uint8_t iox_pull_up_down_sel_register_0 = 0b01001000;
-const uint8_t iox_pull_up_down_sel_register_1 = 0b01001001;
-const uint8_t iox_int_mask_register_0 = 0b01001010;
-const uint8_t iox_int_mask_register_1 = 0b01001011;
-const uint8_t iox_int_stat_register_0 = 0b01001100;
-const uint8_t iox_int_stat_register_1 = 0b01001101;
-const uint8_t iox_out_port_config_register = 0b01001111;
+const uint8_t iox_read_add = 0x21;
+const uint8_t iox_write_add = 0x20;
+const uint8_t iox_input_port_0 = 0x00;
+const uint8_t iox_input_port_1 = 0x01;
+const uint8_t iox_output_port_0 = 0x02;
+const uint8_t iox_output_port_1 = 0x03;
+const uint8_t iox_pol_inv_port_0 = 0x04;
+const uint8_t iox_pol_inv_port_1 = 0x05;
+const uint8_t iox_config_port_0 = 0x06;
+const uint8_t iox_config_port_1 = 0x07;
+const uint8_t iox_drive_strength_register_00 = 0x40;
+const uint8_t iox_drive_strenght_register_01 = 0x41;
+const uint8_t iox_drive_strenght_register_10 = 0x42;
+const uint8_t iox_drive_strenght_register_11 = 0x43;
+const uint8_t iox_in_latch_register_0 = 0x44;
+const uint8_t iox_in_ltach_register_1 =0x45;
+const uint8_t iox_pull_up_down_en_register_0 = 0x46;
+const uint8_t iox_pull_up_down_en_register_1 = 0x47;
+const uint8_t iox_pull_up_down_sel_register_0 = 0x48;
+const uint8_t iox_pull_up_down_sel_register_1 = 0x49;
+const uint8_t iox_int_mask_register_0 = 0x4a;
+const uint8_t iox_int_mask_register_1 = 0x4b;
+const uint8_t iox_int_stat_register_0 = 0x4c;
+const uint8_t iox_int_stat_register_1 = 0x4d;
+const uint8_t iox_out_port_config_register = 0x4f;
 
 //struct setup for pin cals
 struct pin {
@@ -192,23 +319,23 @@ struct pin scl = {0b0, 0, 2, true};
 struct pin htr_1 = {0b0, 0, 13, true};
 struct pin htr_2 = {0b0, 0, 12, true};
 struct pin fan = {0b0, 0, 5, true};
-struct pin ovlight = {0b10000000, 1, 20, false};
+struct pin ovlight = {0b00000001, 1, 20, false};
 // struct pin onboard_led = {0b0, 0, 2, true};
-struct pin wifi_led_g = {0b00000010, 1, 16, false};
-struct pin wifi_led_or = {0b00000100, 1, 15, false};
-struct pin wifi_led_r = {0b00001000, 1, 14, false};
-struct pin status_led_g = {0b00000001, 1, 13, false};
-struct pin status_led_r = {0b10000000, 0, 11, false};
-struct pin up_btn = {0b01000000, 1, 19, false};
-struct pin dwn_btn = {0b00100000, 1, 18, false};
-struct pin ent_btn = {0b00010000, 1, 17, false};
-struct pin io_00 = {0b00000001, 0, 4, false};
-struct pin io_01 = {0b00000010, 0, 5, false};
-struct pin io_02 = {0b00000100, 0, 6, false};
-struct pin io_03 = {0b00001000, 0, 7, false};
-struct pin io_04 = {0b00010000, 0, 8, false};
-struct pin io_05 = {0b00100000, 0, 9, false};
-struct pin io_06 = {0b01000000, 0, 10, false};
+struct pin wifi_led_g = {0b00010000, 1, 16, false};
+struct pin wifi_led_or = {0b00100000, 1, 15, false};
+struct pin wifi_led_r = {0b01000000, 1, 14, false};
+struct pin status_led_g = {0b10000000, 1, 13, false};
+struct pin status_led_r = {0b00000001, 0, 11, false};
+struct pin up_btn = {0b00000010, 1, 19, false};
+struct pin dwn_btn = {0b00000100, 1, 18, false};
+struct pin ent_btn = {0b00001000, 1, 17, false};
+struct pin io_00 = {0b10000000, 0, 4, false};
+struct pin io_01 = {0b01000000, 0, 5, false};
+struct pin io_02 = {0b00100000, 0, 6, false};
+struct pin io_03 = {0b00010000, 0, 7, false};
+struct pin io_04 = {0b00001000, 0, 8, false};
+struct pin io_05 = {0b00000100, 0, 9, false};
+struct pin io_06 = {0b00000010, 0, 10, false};
 
 // read write enum define for io_call function
 enum read_write {
@@ -371,11 +498,11 @@ uint8_t read_current_io_state (int port) {
   }
 
   // read current state
-  Wire.requestFrom(iox_read_add, 1);
+  Wire.requestFrom(iox_write_add, 1);
   uint8_t readval = 0b0;
-  while (Wire.available()) {
-    readval = Wire.read();
-  }
+ 
+  readval = Wire.read();
+ 
   return readval;
 }
 
@@ -410,84 +537,10 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
     }
 
   } else if (pin_needed.onboard == false){ //digital write to io expander
-    if (read_write == write) {
-       // If the pin is offboard, check if we need to read or write
-      if (pin_needed.port == 0) { //write to port 0
-      // If we need to write, check which port the pin is on
-        uint8_t current = read_current_io_state(pin_needed.port);
-        if (high_low == high) {
-          uint8_t highval = current | pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_0);
-          Wire.write(highval); //not sure chek this
-          Wire.endTransmission();
-        } else if (high_low == low) {
-          uint8_t lowval = current & pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_0);
-          Wire.write(lowval);
-          Wire.endTransmission();
-        } else {
-          //need something here probly
-        }
-      } else if (pin_needed.port == 1) { // write to port 1
-      // If we need to write, check which port the pin is on
-        uint8_t current = read_current_io_state(pin_needed.port);
-        if (high_low == high) {
-          uint8_t highval = current | pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_1);
-          Wire.write(highval); //not sure chek this
-          Wire.endTransmission();
-        } else if (high_low == low) {
-          uint8_t lowval = current | pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_1);
-          Wire.write(lowval); //not sure chek this
-          Wire.endTransmission();
-        } else {
-          //need something here probly
-        }
-      } else {
-        //need something here probly
-      }
-    } else if (read_write == read) {
-      if (pin_needed.port == 0) {  // write read from port 0
-      // If we need to read, check which port the pin is on
-        Wire.beginTransmission (iox_write_add);
-        Wire.write(iox_input_port_0);
-        Wire.endTransmission();
+    
 
-        Wire.requestFrom(iox_read_add, 1); // read from port
-        uint8_t readval = 0b0;
-        while (Wire.available()) {
-        readval = Wire.read();
-        }
-        if (pin_needed.mask & readval == 0){
-          return(LOW);
-        } else {
-          return(HIGH);
-        }
-        
-      } else if (pin_needed.port == 1) {
-        // If we need to read, check which port the pin is on
-        Wire.beginTransmission (iox_write_add);
-        Wire.write(iox_input_port_1);
-        Wire.endTransmission();
+  //i2c io read/werite
 
-        Wire.requestFrom(iox_read_add, 1);  //read from port
-        uint8_t readval = 0b0;
-        while (Wire.available()) {
-        readval = Wire.read();
-        }
-        if (pin_needed.mask & readval == 0) {
-          return(LOW);
-        } else {
-          return(HIGH);
-        }
-
-      }
-    }
   } else { // return if input bad
     
   }
@@ -885,7 +938,7 @@ int reflow_control (struct curve curve_needed) {
 }
 
 
-8//*
+
 
 void setup() {
 
@@ -903,6 +956,7 @@ void setup() {
 
   // start i2c
   Wire.begin(sda.pin_number, scl.pin_number);
+  Wire.setClock(10);
   Serial.println("i2c started");
   
   // io epander init
@@ -916,23 +970,30 @@ void setup() {
   Wire.endTransmission();
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_config_port_1); //port 1
-  Wire.write(0b01110000);
+  Wire.write(0b00001110);
   Wire.endTransmission();
   Serial.println("io expander pin modes set");
 
   // set all io expander outputs low
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_output_port_0);  //port 0
-  Wire.write(0b11111111);
+  Wire.write(0b00000000);
   Wire.endTransmission();
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_output_port_1);  //port 1
-  Wire.write(0b11111111);
+  Wire.write(0b00000000);
   Wire.endTransmission();
   Serial.println("io expander all pins set to low");
 
 
-
+  io_call(wifi_led_g, write, high);
+  delay(1000);
+  io_call(wifi_led_g, write, low);
+  delay(1000);
+  io_call(wifi_led_g, write, high);
+  delay(1000);
+  io_call(wifi_led_g, write, low);
+  delay(1000);
 
 
   
@@ -1062,7 +1123,7 @@ void setup() {
   
 }
 
-*//*
+
 
 
 void loop() {
@@ -1127,4 +1188,3 @@ void loop() {
 }
 
 
-*/
