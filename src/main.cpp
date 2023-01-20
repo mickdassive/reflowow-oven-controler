@@ -538,6 +538,45 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
 
   } else if (pin_needed.onboard == false){ //digital write to io expander
     
+    if (read_write == write) {
+
+      uint8_t current = read_current_io_state(pin_needed.port);
+      uint8_t output = 0b00000000;
+
+      if (high_low == high) {
+        output = current | pin_needed.mask;
+      } else if (high_low == low){
+        output = current & pin_needed.mask;
+      }
+
+      Wire.beginTransmission(iox_write_add);
+      if (pin_needed.port == 0) {
+        Wire.write(iox_output_port_0);
+      } else if (pin_needed.port == 1) {
+        Wire.write(iox_output_port_1);
+      }
+      Wire.write(output);
+
+    } else if (read_write == read) {
+      uint8_t readval = 0b00000000;
+
+      Wire.beginTransmission(iox_write_add);
+      
+      if (pin_needed.port == 0) {
+        Wire.write(iox_input_port_0);
+      } else if (pin_needed.port == 1) {
+        Wire.write(iox_input_port_1);
+      }
+
+      Wire.endTransmission();
+
+      Wire.requestFrom(iox_write_add, 1);
+      readval = Wire.read();
+      
+    }
+    
+
+        
 
   //i2c io read/werite
 
