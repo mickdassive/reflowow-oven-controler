@@ -538,30 +538,43 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
 
   } else if (pin_needed.onboard == false){ //digital write to io expander
     
-    if (read_write == write) {
+    if (read_write == write) {  // chek to see if we are writeing the the ioxepander
 
-      uint8_t current = read_current_io_state(pin_needed.port);
+      // int local varibels
+      uint8_t current = read_current_io_state(pin_needed.port); // read and store the current state of the output register of the the given pin
       uint8_t output = 0b00000000;
 
+      // bitwise logic to ether set high or low a given pin
       if (high_low == high) {
         output = current | pin_needed.mask;
       } else if (high_low == low){
         output = current & pin_needed.mask;
       }
 
-      Wire.beginTransmission(iox_write_add);
+      
+      Wire.beginTransmission(iox_write_add);  // begin write to iox
+
+      // write to port 0 or 1 based on the given pins's struct 
       if (pin_needed.port == 0) {
         Wire.write(iox_output_port_0);
       } else if (pin_needed.port == 1) {
         Wire.write(iox_output_port_1);
       }
+
       Wire.write(output);
 
-    } else if (read_write == read) {
-      uint8_t readval = 0b00000000;
+      Wire.endTransmission();
 
+    } else if (read_write == read) {  // check to see if we are reading from the io expanders input
+      
+      // init local varibles
+      uint8_t readval = 0b00000000;
+      uint8_t output_byte = 0b00000000;
+      
+      // tell the io expander what input port i want to read from 
       Wire.beginTransmission(iox_write_add);
       
+      // selcect port based on given pin
       if (pin_needed.port == 0) {
         Wire.write(iox_input_port_0);
       } else if (pin_needed.port == 1) {
@@ -570,18 +583,24 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
 
       Wire.endTransmission();
 
+      // begin reading from the io expander
       Wire.requestFrom(iox_write_add, 1);
       readval = Wire.read();
+
+      // isolate the indivdual bit of the given pin bsed on its mask
+      output_byte = readval & pin_needed.mask;
+
+      // return high or low based on wether or not the byte is more than 0
+      if (output_byte == 0) {
+        return (LOW);
+      } else {
+        return (HIGH);
+      }
       
     }
-    
-
-        
-
-  //i2c io read/werite
 
   } else { // return if input bad
-    
+    return 0;
   }
   return 0;
 
