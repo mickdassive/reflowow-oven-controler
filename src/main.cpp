@@ -143,90 +143,6 @@ void loop() {
 
 
 
-
-if (read_write == write) {
-       // If the pin is offboard, check if we need to read or write
-      if (pin_needed.port == 0) { //write to port 0
-      // If we need to write, check which port the pin is on
-        uint8_t current = read_current_io_state(pin_needed.port);
-        if (high_low == high) {
-          uint8_t highval = current | pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_0);
-          
-          Wire.write(highval); //not sure chek this
-          Wire.endTransmission();
-        } else if (high_low == low) {
-          uint8_t lowval = current & pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_0);
-          Wire.write(lowval);
-          Wire.endTransmission();
-        } else {
-          //need something here probly
-        }
-      } else if (pin_needed.port == 1) { // write to port 1
-      // If we need to write, check which port the pin is on
-        uint8_t current = read_current_io_state(pin_needed.port);
-        if (high_low == high) {
-          uint8_t highval = current | pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_1);
-          Wire.write(highval); //not sure chek this
-          Wire.endTransmission();
-        } else if (high_low == low) {
-          uint8_t lowval = current | pin_needed.mask;
-          Wire.beginTransmission(iox_write_add);
-          Wire.write(iox_output_port_1);
-          Wire.write(lowval); //not sure chek this
-          Wire.endTransmission();
-        } else {
-          //need something here probly
-        }
-      } else {
-        //need something here probly
-      }
-    } else if (read_write == read) {
-      if (pin_needed.port == 0) {  // write read from port 0
-      // If we need to read, check which port the pin is on
-        Wire.beginTransmission (iox_write_add);
-        Wire.write(iox_input_port_0);
-        Wire.endTransmission();
-
-        Wire.requestFrom(iox_write_add, 1); // read from port
-        uint8_t readval = 0b0;
-        
-        readval = Wire.read();
-        
-        if (pin_needed.mask & readval == 0){
-          return(LOW);
-        } else {
-          return(HIGH);
-        }
-        
-      } else if (pin_needed.port == 1) {
-        // If we need to read, check which port the pin is on
-        Wire.beginTransmission (iox_write_add);
-        Wire.write(iox_input_port_1);
-        Wire.endTransmission();
-
-        Wire.requestFrom(iox_write_add, 1);  //read from port
-        uint8_t readval = 0b0;
-        
-        readval = Wire.read();
-        
-        if (pin_needed.mask & readval == 0) {
-          return(LOW);
-        } else {
-          return(HIGH);
-        }
-
-      }
-    }
-
-
-
-
 */
 
 
@@ -1053,7 +969,7 @@ void setup() {
   io_call(wifi_led_g, write, low);
   delay(1000);
 
-
+/*
   
   // start wifi
   io_call(wifi_led_r, write, high);
@@ -1090,6 +1006,8 @@ void setup() {
     Serial.println("WIFI connection lost");
   } 
   
+*/
+
   // might need to pull out of shutdown mode before self address??????????????
 
   Wire.beginTransmission(disp_base_add_w);
@@ -1238,6 +1156,67 @@ void loop() {
   delay (1000);
   Serial.println(io_call(ent_btn, read, read_mode));
   io_call(wifi_led_g, write, low);
+
+
+
+
+
+  byte error, address;
+  int nDevices;
+ 
+  Serial.println("Scanning...");
+ 
+  nDevices = 0;
+  for(address = 1; address < 127; address++ )
+  {
+    // The i2c_scanner uses the return value of
+    // the Write.endTransmisstion to see if
+    // a device did acknowledge to the address.
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+ 
+    if (error == 0)
+    {
+      Serial.print("I2C device found at address 0x");
+      if (address<16)
+        Serial.print("0");
+      Serial.print(address,HEX);
+      Serial.println("  !");
+ 
+      nDevices++;
+    }
+    else if (error==4)
+    {
+      Serial.print("Unknown error at address 0x");
+      if (address<16)
+        Serial.print("0");
+      Serial.println(address,HEX);
+    }    
+  }
+  if (nDevices == 0)
+    Serial.println("No I2C devices found\n");
+  else
+    Serial.println("done\n");
+ 
+  delay(5000);           // wait 5 seconds for next scan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
