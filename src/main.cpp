@@ -94,15 +94,15 @@ void setup() {
 
 
 
-  // Configure all pins of the I/O expander as inputs
+  // Configure all pins of the I/O expander as outputs
   Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x06); // Configuration register for port 0
-  Wire.write(0x00); // Set all bits to 1 for input
+  Wire.write(0x00); // Set all bits to 0 for outputs
   Wire.endTransmission();
 
   Wire.beginTransmission(0x20); // I/O expander address
   Wire.write(0x07); // Configuration register for port 1
-  Wire.write(0x00); // Set all bits to 1 for input
+  Wire.write(0x00); // Set all bits to 0 for outputs
   Wire.endTransmission();
 
 
@@ -235,23 +235,23 @@ struct pin scl = {0b0, 0, 2, true};
 struct pin htr_1 = {0b0, 0, 13, true};
 struct pin htr_2 = {0b0, 0, 12, true};
 struct pin fan = {0b0, 0, 5, true};
-struct pin ovlight = {0b00000001, 1, 20, false};
+struct pin ovlight = {0b10000000, 1, 20, false};
 // struct pin onboard_led = {0b0, 0, 2, true};
-struct pin wifi_led_g = {0b00010000, 1, 16, false};
-struct pin wifi_led_or = {0b00100000, 1, 15, false};
-struct pin wifi_led_r = {0b01000000, 1, 14, false};
-struct pin status_led_g = {0b10000000, 1, 13, false};
-struct pin status_led_r = {0b00000001, 0, 11, false};
-struct pin up_btn = {0b00000010, 1, 19, false};
-struct pin dwn_btn = {0b00000100, 1, 18, false};
-struct pin ent_btn = {0b00001000, 1, 17, false};
-struct pin io_00 = {0b10000000, 0, 4, false};
-struct pin io_01 = {0b01000000, 0, 5, false};
-struct pin io_02 = {0b00100000, 0, 6, false};
-struct pin io_03 = {0b00010000, 0, 7, false};
-struct pin io_04 = {0b00001000, 0, 8, false};
-struct pin io_05 = {0b00000100, 0, 9, false};
-struct pin io_06 = {0b00000010, 0, 10, false};
+struct pin wifi_led_g = {0b00001000, 1, 16, false};
+struct pin wifi_led_or = {0b00000100, 1, 15, false};
+struct pin wifi_led_r = {0b00000010, 1, 14, false};
+struct pin status_led_g = {0b00000001, 1, 13, false};
+struct pin status_led_r = {0b10000000, 0, 11, false};
+struct pin up_btn = {0b01000000, 1, 19, false};
+struct pin dwn_btn = {0b00100000, 1, 18, false};
+struct pin ent_btn = {0b00010000, 1, 17, false};
+struct pin io_00 = {0b00000001, 0, 4, false};
+struct pin io_01 = {0b00000010, 0, 5, false};
+struct pin io_02 = {0b00000100, 0, 6, false};
+struct pin io_03 = {0b00001000, 0, 7, false};
+struct pin io_04 = {0b00010000, 0, 8, false};
+struct pin io_05 = {0b00100000, 0, 9, false};
+struct pin io_06 = {0b01000000, 0, 10, false};
 
 // read write enum define for io_call function
 enum read_write {
@@ -301,9 +301,9 @@ struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 235, 210000
 // 7 seg diplay defines
 const uint8_t disp_base_add_w = 0b00000000;
 const uint8_t disp_base_add_r = 0b00000001;
-const uint8_t disp_1_add_w = 0b00000100;
+const uint8_t disp_1_add_w = 0x02;
 const uint8_t disp_1_add_r = 0b00000101;
-const uint8_t disp_2_add_w = 0b00000010;
+const uint8_t disp_2_add_w = 0x01;
 const uint8_t disp_2_add_r = 0b00000011;
 
 // digit write registers
@@ -459,23 +459,26 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
       // int local varibels
       uint8_t current = read_current_io_state(pin_needed.port); // read and store the current state of the output register of the the given pin
       uint8_t output = 0b00000000;
+      uint8_t mask_not = ~pin_needed.mask;
+      uint8_t port_reg = 0x00;
 
       // bitwise logic to ether set high or low a given pin
       if (high_low == high) {
         output = current | pin_needed.mask;
       } else if (high_low == low){
-        output = current & pin_needed.mask;
+        output = current & mask_not;
       }
-
-      
-      Wire.beginTransmission(iox_write_add);  // begin write to iox
 
       // write to port 0 or 1 based on the given pins's struct 
       if (pin_needed.port == 0) {
-        Wire.write(iox_output_port_0);
+        port_reg = iox_output_port_0;
       } else if (pin_needed.port == 1) {
-        Wire.write(iox_output_port_1);
+        port_reg = iox_output_port_1;
       }
+
+      Wire.beginTransmission(iox_write_add);  // begin write to iox
+
+      Wire.write(port_reg);
 
       Wire.write(output);
 
@@ -733,7 +736,7 @@ void disp_write_2_line(float line_1, float line_2) {
   delete[] out;
 }
 
-// display blank
+// display blanking function
 // just writes 0s to all digit registers on both display drivers resulting in no segments being on
 void disp_blank() {
 
@@ -930,7 +933,7 @@ void setup() {
 
   // start i2c
   Wire.begin(sda.pin_number, scl.pin_number);
-  Wire.setClock(10);
+  Wire.setClock(100);
   Serial.println("i2c started");
   
   // io epander init
@@ -944,10 +947,11 @@ void setup() {
   Wire.endTransmission();
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_config_port_1); //port 1
-  Wire.write(0b00001110);
+  Wire.write(0b01110000);
   Wire.endTransmission();
   Serial.println("io expander pin modes set");
 
+  
   // set all io expander outputs low
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_output_port_0);  //port 0
@@ -958,16 +962,9 @@ void setup() {
   Wire.write(0b00000000);
   Wire.endTransmission();
   Serial.println("io expander all pins set to low");
+  
 
 
-  io_call(wifi_led_g, write, high);
-  delay(1000);
-  io_call(wifi_led_g, write, low);
-  delay(1000);
-  io_call(wifi_led_g, write, high);
-  delay(1000);
-  io_call(wifi_led_g, write, low);
-  delay(1000);
 
 /*
   
@@ -1066,11 +1063,11 @@ void setup() {
   // disply intesity setup
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_global_intensity);
-  Wire.write(0b10000000);  // 9/16 duty cycle  might want to chek if this is right
+  Wire.write(0x01);  // 9/16 duty cycle  might want to chek if this is right
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_global_intensity);
-  Wire.write(0b10000000);  // 9/16 duty cycle
+  Wire.write(0x01);  // 9/16 duty cycle
   Wire.endTransmission();
   Serial.println("display intensity set");
 
@@ -1094,9 +1091,7 @@ void setup() {
   Wire.endTransmission();
   Serial.println("display self test complete");
 
-  disp_write("8888888888888888");
-  //delay(10000);
-  
+
 }
 
 
@@ -1104,7 +1099,7 @@ void setup() {
 
 void loop() {
   
-
+/*
   int menu_opt = 0;
   int menu_opt_count = 1;  // rember indexing starts at 0 stupid
 
@@ -1157,51 +1152,56 @@ void loop() {
   Serial.println(io_call(ent_btn, read, read_mode));
   io_call(wifi_led_g, write, low);
 
+*/
+io_call(status_led_g, write, high);
+delay (1000);
+disp_write("888888888888888");
 
+io_call(ent_btn, read, read_mode);
+Serial.println(io_call(ent_btn, read, read_mode), BIN);
+Serial.println("entread");
 
-
-
-  byte error, address;
-  int nDevices;
- 
-  Serial.println("Scanning...");
- 
-  nDevices = 0;
-  for(address = 1; address < 127; address++ )
-  {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the address.
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
- 
-    if (error == 0)
-    {
-      Serial.print("I2C device found at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.print(address,HEX);
-      Serial.println("  !");
- 
-      nDevices++;
-    }
-    else if (error==4)
-    {
-      Serial.print("Unknown error at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.println(address,HEX);
-    }    
-  }
-  if (nDevices == 0)
-    Serial.println("No I2C devices found\n");
-  else
-    Serial.println("done\n");
- 
-  delay(5000);           // wait 5 seconds for next scan
-
-
-
+io_call(wifi_led_g, write, high);
+/*
+disp_blank();
+Wire.beginTransmission(disp_1_add_w);
+Wire.write(disp_digit_0);
+Wire.write(0b01111111);
+Wire.endTransmission();
+io_call(wifi_led_g, write, high);
+delay(500);
+Wire.beginTransmission(disp_1_add_w);
+Wire.write(disp_digit_0);
+Wire.write(0b00000000);
+Wire.endTransmission();
+io_call(wifi_led_g, write, low);
+delay(500);
+Wire.beginTransmission(disp_1_add_w);
+Wire.write(disp_digit_0);
+Wire.write(0b01111111);
+Wire.endTransmission();
+io_call(wifi_led_g, write, high);
+delay(500);
+Wire.beginTransmission(disp_1_add_w);
+Wire.write(disp_digit_0);
+Wire.write(0b00000000);
+Wire.endTransmission();
+io_call(wifi_led_g, write, low);
+delay(500);
+Wire.beginTransmission(disp_1_add_w);
+Wire.write(disp_digit_0);
+Wire.write(0b01111111);
+Wire.endTransmission();
+io_call(wifi_led_g, write, high);
+delay(500);
+Wire.beginTransmission(disp_1_add_w);
+Wire.write(disp_digit_0);
+Wire.write(0b00000000);
+Wire.endTransmission();
+io_call(wifi_led_g, write, low);
+delay(500);
+*/
+//delay (10000);
 
 
 
