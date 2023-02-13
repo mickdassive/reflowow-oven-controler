@@ -17,164 +17,6 @@
 // 1/9/2023
 // Tokyo Andreana
 
-/*
-
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-#include <LittleFS.h>
-#include <Wire.h>
-#include <stdint.h>
-#include <string.h>
-#include <string>
-#include <iostream>
-
-
-// I2C address of the I/O expander
-const uint8_t IO_EXPANDER_ADDRESS = 0x20;
-
-void setup() {
-  // start serial
-  Serial.begin(115200);
-  Serial.println(" ");
-  Serial.println(" ");
-  Serial.println("serial started");
-
-  // start i2c
-  Wire.begin(4, 2);
-  Wire.setClock(10);
-  Serial.println("i2c started");
-
-
-}
-
-void loop() {
-  // Read state of port 0
-  Wire.beginTransmission(0x20);
-  Wire.write(0x00);
-  Wire.endTransmission();
-  Wire.requestFrom(0x20, 1);
-  byte port0 = Wire.read();
-
-  // Read state of port 1
-  Wire.beginTransmission(0x20);
-  Wire.write(0x01);
-  Wire.endTransmission();
-  Wire.requestFrom(0x20, 1);
-  byte port1 = Wire.read();
-
-  // Output state of ports to terminal
-
-  Serial.print("Port 0: ");
-  Serial.println(port0, BIN);
-  Serial.print("Port 1: ");
-  Serial.println(port1, BIN);
-
-
-  delay(1000);
-}
-
-
-
-
-
-
-
-void setup() {
-  // start serial
-  Serial.begin(115200);
-  Serial.println(" ");
-  Serial.println(" ");
-  Serial.println("serial started");
-
-  // start i2c
-  Wire.begin(4, 2);
-  Wire.setClock(10);
-  Serial.println("i2c started");
-
-
-
-  // Configure all pins of the I/O expander as outputs
-  Wire.beginTransmission(0x20); // I/O expander address
-  Wire.write(0x06); // Configuration register for port 0
-  Wire.write(0x00); // Set all bits to 0 for outputs
-  Wire.endTransmission();
-
-  Wire.beginTransmission(0x20); // I/O expander address
-  Wire.write(0x07); // Configuration register for port 1
-  Wire.write(0x00); // Set all bits to 0 for outputs
-  Wire.endTransmission();
-
-
-}
-
-void loop() {
-
-  // Set all outputs of port 0 to high
-  Wire.beginTransmission(0x20);
-  Wire.write(0x02); // Output register address
-  Wire.write(0xff); // Set all bits to high
-  Wire.endTransmission();
-  Wire.beginTransmission(0x20);
-  Wire.write(0x03); // Output register address
-  Wire.write(0xff); // Set all bits to high
-  Wire.endTransmission();
-  
- 
-  delay(1000);
-
-  // Set all outputs of port 0 to low
-  Wire.beginTransmission(0x20);
-  Wire.write(0x02); // Output register address
-  Wire.write(0x00); // Set all bits to low
-  Wire.endTransmission();
-  Wire.beginTransmission(0x20);
-  Wire.write(0x03); // Output register address
-  Wire.write(0x00); // Set all bits to low
-  Wire.endTransmission();
-
-
-  delay(1000);
-
-
-}
-
-
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-//{reflow oven firmware}
-//Copyright (C) {2023}  {mickmake}
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// reflow oven firmware
-// v0.1
-// 1/9/2023
-// Tokyo Andreana
-
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -348,54 +190,12 @@ const uint8_t disp_down = 0x80;
 const uint8_t disp_up_rst = 0x01;
 const uint8_t disp_up = 0x81;
 
-// char bytes for 7 segment display
-// dp is autimaticly attched durring the disp_write function
-// segment map {0b, DP, A, B, C, D, E, F, G}
-//   a
-//  ___
-// f|g|b
-//  ___
-// e|d|c
-//  ___DP
-const uint8_t char_0 = 0b01111110;
-const uint8_t char_1 = 0b00110000;
-const uint8_t char_2 = 0b01101101;
-const uint8_t char_3 = 0b01111001;
-const uint8_t char_4 = 0b00110011;
-const uint8_t char_5 = 0b01011011;
-const uint8_t char_6 = 0b01011111;
-const uint8_t char_7 = 0b01110000;
-const uint8_t char_8 = 0b01111111;
-const uint8_t char_9 = 0b01111011;
-const uint8_t char_dp = 0b10000000;
-const uint8_t char_dash = 0b00000001;
-const uint8_t char_a = 0b01111101;
-const uint8_t char_b = 0b00011111;
-const uint8_t char_c = 0b00001101;
-const uint8_t char_e = 0b01001111;
-const uint8_t char_f = 0b01000111;
-const uint8_t char_g = 0b01011110;
-const uint8_t char_h = 0b00010111;
-const uint8_t char_i = 0b00000110;
-const uint8_t char_j = 0b01011000;
-const uint8_t char_k = 0b01010111;
-const uint8_t char_l = 0b00001110;
-const uint8_t char_m = 0b01010101;
-const uint8_t char_n = 0b00010101;
-const uint8_t char_o = 0b00011101;
-const uint8_t char_p = 0b01100111;
-const uint8_t char_q = 0b01110011;
-const uint8_t char_r = 0b00000101;
-const uint8_t char_s = 0b01101101;
-const uint8_t char_t = 0b00001111;
-const uint8_t char_u = 0b00011100;
-const uint8_t char_v = 0b00101010;
-const uint8_t char_w = 0b00101011;
-const uint8_t char_x = 0b00010100;
-const uint8_t char_y = 0b00111011;
-const uint8_t char_z = 0b01101100;
-const uint8_t char_space = 0b00000000;
-const uint8_t char_qwst = 0b11110010; // already includes decimal
+char* prev_disp;
+
+enum MenuOptions {
+  CURVE_63_37,
+  DISPLAY_IP
+};
 
 
 
@@ -583,71 +383,70 @@ float pid(float setpoint) {
 // just writes 0s to all digit registers on both display drivers resulting in no segments being on
 void disp_blank() {
 
-  Serial.println("display blanked");
 
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_0);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_1);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_2);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_3);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_4);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_5);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_6);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_digit_7);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_0);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_1);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_2);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_3);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_4);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_5);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_6);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_digit_7);
-  Wire.write(char_space);
+  Wire.write(0x00);
   Wire.endTransmission();
 }
 
@@ -655,6 +454,12 @@ void disp_blank() {
 // to_write: string to be witten to the display
 // currently only supports max 16 cahricter input as of right now will add sepping at a later time
 char disp_write(char* to_write) {
+
+  if (to_write == prev_disp) {
+    return 0;
+  } else {
+    prev_disp = to_write;
+  }
 
   disp_blank();
 
@@ -686,6 +491,14 @@ char disp_write(char* to_write) {
   for (int k = 0; k < to_write_len; k++) {  // translate form text to bytes
     
     //ive tryed to come up with a better way to do this but ive just given up and am gunna do it the stupid way
+
+    // segment map {0b, DP, A, B, C, D, E, F, G}
+    //   a
+    //  ___
+    // f|g|b
+    //  ___
+    // e|d|c
+    //  ___DP
     
     uint8_t current_char = 0b0;
     
@@ -911,8 +724,11 @@ void heater_control (float input) {
 // curve_needed: struct of reflow cure to follow
 int reflow_control (struct curve curve_needed) {
 
-  // turn on oven fan
+  // turn on oven fan and light aswell as cahange the status led
   io_call(fan, write, high);
+  io_call(ovlight, write, high);
+  io_call(status_led_g, write, low);
+  io_call(status_led_r, write, high);
 
   Serial.println("refow loop enterd");
 
@@ -976,7 +792,23 @@ int reflow_control (struct curve curve_needed) {
       } else {
         if ((millis() - stop_time) >= 3000) {
           // turn off oven fan
+          io_call(status_led_g, write, low);
+          delay(100);
+          io_call(status_led_g, write, high);
+          delay(100);
+          io_call(status_led_g, write, low);
+          delay(100);
+          io_call(status_led_g, write, high);
+          delay(100);
+          io_call(status_led_g, write, low);
+          delay(100);
+          io_call(status_led_g, write, high);
+          delay(100);
           io_call(fan, write, low);
+          io_call(ovlight, write, low);
+          io_call(status_led_g, write, high);
+          io_call(status_led_r, write, low);
+          delay (1000);
           return 0;          
         }
       }
@@ -992,6 +824,9 @@ int reflow_control (struct curve curve_needed) {
   
   // turn off oven fan
   io_call(fan, write, low);
+  io_call(ovlight, write, low);
+  io_call(status_led_g, write, high);
+  io_call(status_led_r, write, low);
   
   return 0;
     
@@ -1016,7 +851,7 @@ void setup() {
 
   // start i2c
   Wire.begin(sda.pin_number, scl.pin_number);
-  Wire.setClock(100);
+  Wire.setClock(400000); //
   Serial.println("i2c started");
   
   // io epander init
@@ -1181,51 +1016,46 @@ void setup() {
 
 
 void loop() {
+
+  io_call(status_led_g, write, high);
   
+  static MenuOptions menuOption = CURVE_63_37;
 
-  int menu_opt = 0;
-  int menu_opt_count = 1;  // rember indexing starts at 0 stupid
-
-  // menu controlls
-  if (debounce(up_btn) == LOW) { // incriment menu counter when up btn is pressed
-    menu_opt++;
-    Serial.println("menu up");
-    if (menu_opt > menu_opt_count) { // foldback menu option count 
-      menu_opt = 0;
-      Serial.println("menu up foldback");
-    }
-  } else if (debounce(dwn_btn) == LOW) {  // decriment menu counter when up dwn is pressed
-    menu_opt--;
-    Serial.println("menu dwn");
-    if (menu_opt < 0) { // foldback menu option count
-      menu_opt = menu_opt_count;
-      Serial.println("menu dwn foldback");
-    }
+  // continuously update the display
+  switch (menuOption) {
+    case CURVE_63_37:
+      disp_write("63 37 curve");
+      break;
+    case DISPLAY_IP:
+      disp_write("display ip ?");
+      break;
+    default:
+      disp_write("Error");
+      break;
   }
 
-  // menu main function
-  if (menu_opt == 0) {
-    disp_write("63 37 curve");
-    Serial.println("dispwrite?");
-    delay(1000);
-    if (debounce(ent_btn) == LOW) {
-      reflow_control(curve_63_37);
+  // check for button press
+  if (debounce(up_btn) == LOW) {
+    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : CURVE_63_37;
+  } else if (debounce(ent_btn) == LOW) {
+    switch (menuOption) {
+      case CURVE_63_37:
+        reflow_control(curve_63_37);
+        break;
+      case DISPLAY_IP:
+        //IPAddress ip = WiFi.localIP();
+        //String ip_str = ip.toString();
+        //disp_write((char*)ip_str.c_str());
+        disp_write("ip test");
+        delay (3000);
+        break;
+      default:
+        disp_write("Error");
+        break;
     }
-  } else if (menu_opt == 1) {
-    disp_write("display ip?");
-    Serial.println("dispwrite?1");
-    delay (1000);
-    if (debounce(ent_btn) == LOW) {
-      IPAddress ip = WiFi.localIP();
-      String ip_str = ip.toString();
-      disp_write((char*)ip_str.c_str());  // might not work lookin to it????????
-      Serial.println("dispwrite?2");
-      delay (3000);
-    }
-  } else {
-    Serial.println("else");
+  } else if (debounce(dwn_btn) == LOW) {
+    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : CURVE_63_37;
   }
-  
 
 
 }
