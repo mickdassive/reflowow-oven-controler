@@ -185,6 +185,7 @@ void loop() {
 #include <string.h>
 #include <string>
 #include <iostream>
+#include <cstring>
 
 
 const char* ssid = "xxxx";
@@ -578,12 +579,84 @@ float pid(float setpoint) {
 
 }
 
+// display blanking function
+// just writes 0s to all digit registers on both display drivers resulting in no segments being on
+void disp_blank() {
+
+  Serial.println("display blanked");
+
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_0);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_1);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_2);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_3);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_4);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_5);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_6);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_7);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_0);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_1);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_2);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_3);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_4);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_5);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_6);
+  Wire.write(char_space);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_7);
+  Wire.write(char_space);
+  Wire.endTransmission();
+}
+
 // display write function
 // to_write: string to be witten to the display
 // currently only supports max 16 cahricter input as of right now will add sepping at a later time
 char disp_write(char* to_write) {
 
-  Serial.println("display write called");
+  disp_blank();
 
   // defines
   int to_write_len = strlen(to_write);
@@ -604,26 +677,108 @@ char disp_write(char* to_write) {
     if (to_write[i] == '.') {
       decimal_counter++;
       decimal_pos[(i - 1) - decimal_counter] = 1;
-    } else if (to_write[i] == ' ') {
-      string[i] = 'space';
-    } else if (to_write[i] == '-') {
-      string[i] = 'dash';
-    } else if (to_write[i] == '?') {
-      string[i] = 'qwst';
     } else {
       string[i] = to_write[i];
     }
-  }
 
+  }
+ 
   for (int k = 0; k < to_write_len; k++) {  // translate form text to bytes
-    char current_char = 'char_' + string[k];
+    
+    //ive tryed to come up with a better way to do this but ive just given up and am gunna do it the stupid way
+    
+    uint8_t current_char = 0b0;
+    
+    if (string[k] == 0) {
+      current_char = 0b01111110;
+    } else if (string[k] == '1') {
+      current_char = 0b00110000;
+    } else if (string[k] == '2') {
+      current_char = 0b01101101;
+    } else if (string[k] == '3') {
+      current_char = 0b01111001;
+    } else if (string[k] == '4') {
+      current_char = 0b00110011;
+    } else if (string[k] == '5') {
+      current_char = 0b01011011;
+    } else if (string[k] == '6') {
+      current_char = 0b01011111;
+    } else if (string[k] == '7') {
+      current_char = 0b01110000;
+    } else if (string[k] == '8') {
+      current_char = 0b01111111;
+    } else if (string[k] == '9') {
+      current_char = 0b01111011;
+    } else if (string[k] == '-') {
+      current_char = 0b00000001;
+    } else if (string[k] == 'a') {
+      current_char = 0b01111101;
+    } else if (string[k] == 'b') {
+      current_char = 0b00011111;
+    } else if (string[k] == 'c') {
+      current_char = 0b00001101;
+    } else if (string[k] == 'd') {
+      current_char = 0b00111101;
+    } else if (string[k] == 'e') {
+      current_char = 0b01001111;
+    } else if (string[k] == 'f') {
+      current_char = 0b01000111;
+    } else if (string[k] == 'g') {
+      current_char = 0b01011110;
+    } else if (string[k] == 'h') {
+      current_char = 0b00010111;
+    } else if (string[k] == 'i') {
+      current_char = 0b00000110;
+    } else if (string[k] == 'j') {
+      current_char = 0b01011000;
+    } else if (string[k] == 'k') {
+      current_char = 0b01010111;
+    } else if (string[k] == 'l') {
+      current_char = 0b00001110;
+    } else if (string[k] == 'm') {
+      current_char = 0b01010101;
+    } else if (string[k] == 'n') {
+      current_char = 0b00010101;
+    } else if (string[k] == 'o') {
+      current_char = 0b00011101;
+    } else if (string[k] == 'p') {
+      current_char = 0b01100111;
+    } else if (string[k] == 'q') {
+      current_char = 0b01110011;
+    } else if (string[k] == 'r') {
+      current_char = 0b00000101;
+    } else if (string[k] == 's') {
+      current_char = 0b01101101;
+    } else if (string[k] == 't') {
+      current_char = 0b00001111;
+    } else if (string[k] == 'u') {
+      current_char = 0b00011100;
+    } else if (string[k] == 'v') {
+      current_char = 0b00101010;
+    } else if (string[k] == 'w') {
+      current_char = 0b00101011;
+    } else if (string[k] == 'x') {
+      current_char = 0b00010100;
+    } else if (string[k] == 'y') {
+      current_char = 0b00111011;
+    } else if (string[k] == 'z') {
+      current_char = 0b01101100;
+    } else if (string[k] == ' ') {
+      current_char = 0b00000000;
+    } else if (string[k] == '?') {
+      current_char = 0b11110010;
+    }
+   
+
+
     if (decimal_pos[k] == 1){  // attach decimal point if needed
-      dig_byte[k] = current_char | char_dp;
+      dig_byte[k] = current_char | 0b00000001;
     } else {
       dig_byte[k] = current_char;
-    }    
+    }  
+    
   }
-
+ 
   for (int l = 0; l < to_write_len; l++) {  //write to display 
     if (to_write_len <= (15 + decimal_counter)) {
       if (l == 0) {
@@ -734,78 +889,6 @@ void disp_write_2_line(float line_1, float line_2) {
   strcpy(out, concat.c_str());
   disp_write(out);
   delete[] out;
-}
-
-// display blanking function
-// just writes 0s to all digit registers on both display drivers resulting in no segments being on
-void disp_blank() {
-
-  Serial.println("display blanked");
-
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_0);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_1);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_2);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_3);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_4);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_5);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_6);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_7);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_0);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_1);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_2);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_3);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_4);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_5);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_6);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_7);
-  Wire.write(char_space);
-  Wire.endTransmission();
 }
 
 // heater control
@@ -1099,7 +1182,7 @@ void setup() {
 
 void loop() {
   
-/*
+
   int menu_opt = 0;
   int menu_opt_count = 1;  // rember indexing starts at 0 stupid
 
@@ -1143,83 +1226,6 @@ void loop() {
     Serial.println("else");
   }
   
-  Serial.println(HEX, read_current_io_state(1));
-
-  Serial.println("main loop");
-  
-  Serial.println(current_temp());
-  delay (1000);
-  Serial.println(io_call(ent_btn, read, read_mode));
-  io_call(wifi_led_g, write, low);
-
-*/
-io_call(status_led_g, write, high);
-delay (1000);
-disp_write("888888888888888");
-
-io_call(ent_btn, read, read_mode);
-Serial.println(io_call(ent_btn, read, read_mode), BIN);
-Serial.println("entread");
-
-io_call(wifi_led_g, write, high);
-/*
-disp_blank();
-Wire.beginTransmission(disp_1_add_w);
-Wire.write(disp_digit_0);
-Wire.write(0b01111111);
-Wire.endTransmission();
-io_call(wifi_led_g, write, high);
-delay(500);
-Wire.beginTransmission(disp_1_add_w);
-Wire.write(disp_digit_0);
-Wire.write(0b00000000);
-Wire.endTransmission();
-io_call(wifi_led_g, write, low);
-delay(500);
-Wire.beginTransmission(disp_1_add_w);
-Wire.write(disp_digit_0);
-Wire.write(0b01111111);
-Wire.endTransmission();
-io_call(wifi_led_g, write, high);
-delay(500);
-Wire.beginTransmission(disp_1_add_w);
-Wire.write(disp_digit_0);
-Wire.write(0b00000000);
-Wire.endTransmission();
-io_call(wifi_led_g, write, low);
-delay(500);
-Wire.beginTransmission(disp_1_add_w);
-Wire.write(disp_digit_0);
-Wire.write(0b01111111);
-Wire.endTransmission();
-io_call(wifi_led_g, write, high);
-delay(500);
-Wire.beginTransmission(disp_1_add_w);
-Wire.write(disp_digit_0);
-Wire.write(0b00000000);
-Wire.endTransmission();
-io_call(wifi_led_g, write, low);
-delay(500);
-*/
-//delay (10000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
