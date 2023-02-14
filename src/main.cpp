@@ -37,6 +37,8 @@ const char* password = "xxxx";
 
 ESP8266WebServer server(80);
 
+char* firmware_v = "firmware v 0.1";
+
 //iox defines
 const uint8_t iox_read_add = 0x21;
 const uint8_t iox_write_add = 0x20;
@@ -116,7 +118,7 @@ int adc_pin = A0;
 float adc_offset = -9;  //offset in deg c to copensete for termocuppel inconsisntancy
 
 //pid gain
-float Kp = 1;  //proportional
+float Kp = 0.5;  //proportional
 float Ki = 0.1;  //integral
 float Kd = 0.5;  //derivative
 float DT = 0.01; //pid measurement time (seconds)
@@ -196,7 +198,8 @@ char* prev_disp;
 
 enum MenuOptions {
   CURVE_63_37,
-  DISPLAY_IP
+  DISPLAY_IP,
+  FIRMWARE_VERSION
 };
 
 
@@ -852,6 +855,10 @@ int reflow_control (struct curve curve_needed) {
     
 }
 
+// oven preheat/hold
+int temp_hold () {
+return 0;
+}
 
 
 
@@ -1032,9 +1039,6 @@ void setup() {
 
 }
 
-
-
-
 void loop() {
 
   io_call(status_led_g, write, high);
@@ -1049,14 +1053,17 @@ void loop() {
     case DISPLAY_IP:
       disp_write("display ip ?");
       break;
+    case FIRMWARE_VERSION:
+      disp_write(firmware_v);
+      break;
     default:
-      disp_write("Error");
+      disp_write("error");
       break;
   }
 
   // check for button press
   if (debounce(up_btn) == LOW) {
-    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : CURVE_63_37;
+    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : (menuOption == DISPLAY_IP) ? FIRMWARE_VERSION : CURVE_63_37;
   } else if (debounce(ent_btn) == LOW) {
     switch (menuOption) {
       case CURVE_63_37:
@@ -1069,12 +1076,15 @@ void loop() {
         disp_write("192.168.202.202");
         delay (3000);
         break;
+      case FIRMWARE_VERSION:
+        disp_write(firmware_v);
+        break;
       default:
-        disp_write("Error");
+        disp_write("error");
         break;
     }
   } else if (debounce(dwn_btn) == LOW) {
-    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : CURVE_63_37;
+    menuOption = (menuOption == DISPLAY_IP) ? CURVE_63_37 : (menuOption == FIRMWARE_VERSION) ? DISPLAY_IP : FIRMWARE_VERSION;
   }
 
 
