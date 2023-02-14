@@ -908,7 +908,46 @@ void setup() {
   Wire.endTransmission();
   Serial.println("io expander all pins set to low");
   
-
+  // fancy boot up seqwince 
+  io_call(status_led_g, write, high);
+  delay(100);
+  io_call(status_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_or, write, high);
+  delay(100);
+  io_call(wifi_led_g, write, high);
+  delay(100);
+  io_call(status_led_g, write, low);
+  delay(100);
+  io_call(status_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_or, write, low);
+  delay(100);
+  io_call(wifi_led_g, write, low);
+  delay(100);
+  io_call(status_led_g, write, high);
+  delay(100);
+  io_call(status_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_or, write, high);
+  delay(100);
+  io_call(wifi_led_g, write, high);
+  delay(100);
+  io_call(status_led_g, write, low);
+  delay(100);
+  io_call(status_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_or, write, low);
+  delay(100);
+  io_call(wifi_led_g, write, low);
 
 
 /*
