@@ -28,6 +28,8 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
 
 
 const char* ssid = "xxxx";
@@ -370,12 +372,12 @@ float pid(float setpoint) {
   derivitve = (error - lasterror) / DT;
   lasterror = error;
 
-  float output = Kp * error + Ki * integral + Kd * derivitve;
+  float output1 = Kp * error + Ki * integral + Kd * derivitve;
 
-  //output = constrain (output, -1.0, 1.0);
-  output = map (output, low_range, high_range, -1, 1);
+  output1 = constrain (output1, low_range, high_range);
+  float output2 = map(output1, low_range, high_range, -1, 1);
 
-  return (output);
+  return (output2);
 
 }
 
@@ -466,8 +468,9 @@ char disp_write(char* to_write) {
   // defines
   int to_write_len = strlen(to_write);
   char string[to_write_len];
-  int decimal_counter = 0;
+  int decimal_counter = 1;
   int decimal_pos[to_write_len];
+  int decimal_shift = 0;
   uint8_t dig_byte[to_write_len];
 
   for (int j = 0; j < to_write_len; j++) { // write all 0s to the decimal and dig_dyte array
@@ -480,10 +483,11 @@ char disp_write(char* to_write) {
     // will load and given cahricter of the input sting in to an array
     // includes logic to bind the approprite designater for spaces decimal points dashes and qwestion marks
     if (to_write[i] == '.') {
-      decimal_counter++;
-      decimal_pos[(i - 1) - decimal_counter] = 1;
+      decimal_pos[i - (1 + decimal_shift)] = 1;
+      decimal_shift++;
     } else {
-      string[i] = to_write[i];
+      string[i - decimal_shift] = to_write[i];
+      //decimal_shift = 0;
     }
 
   }
@@ -502,7 +506,7 @@ char disp_write(char* to_write) {
     
     uint8_t current_char = 0b0;
     
-    if (string[k] == 0) {
+    if (string[k] == '0') {
       current_char = 0b01111110;
     } else if (string[k] == '1') {
       current_char = 0b00110000;
@@ -578,14 +582,14 @@ char disp_write(char* to_write) {
       current_char = 0b01101100;
     } else if (string[k] == ' ') {
       current_char = 0b00000000;
-    } else if (string[k] == '?') {
-      current_char = 0b11110010;
-    }
+    } //else if (string[k] == '?') {
+      //current_char = 0b11110010;
+    //}
    
 
 
     if (decimal_pos[k] == 1){  // attach decimal point if needed
-      dig_byte[k] = current_char | 0b00000001;
+      dig_byte[k] = current_char | 0b10000000;
     } else {
       dig_byte[k] = current_char;
     }  
@@ -687,21 +691,14 @@ char disp_write(char* to_write) {
 // display 2 line write
 // just takes 2 inputs and put the appropreate number of spaces inbetween
 void disp_write_2_line(float line_1, float line_2) {
-
-  Serial.println("disp 2 line write called");
-
-  int line_1_len = log10(line_1);
-  std::string line_1_str = std::to_string(line_1);
-  std::string line_2_str = std::to_string(line_2);
-  std::string concat = line_1_str;
-  for (int i = 0; i < 8 - line_1_len; i++) {
-    concat += " ";
-  }
-  concat += line_2_str;
-  char* out = new char[concat.length() + 1];
-  strcpy(out, concat.c_str());
-  disp_write(out);
-  delete[] out;
+  std::ostringstream output;
+  output << std::left << std::setw(9) << std::fixed << std::setprecision(2) << line_1;
+  output << std::fixed << std::setprecision(2) << line_2;
+  std::string message = output.str();
+  char* c_message = new char[message.length() + 1];
+  strcpy(c_message, message.c_str());
+  disp_write(c_message);
+  delete[] c_message;
 }
 
 // heater control
@@ -744,8 +741,7 @@ int reflow_control (struct curve curve_needed) {
   // control loop
   while ((millis() - start_time) < curve_needed.end_time) {
 
-    // clear display
-    disp_blank();
+
     
     if ((millis() - start_time) > curve_needed.preheat_time  && (millis() - start_time) < curve_needed.soak_time) {  // preheat stage
       heater_control(pid(curve_needed.preheat_temp));
@@ -758,6 +754,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.soak_temp));
       if ((millis() - start_time) < (curve_needed.soak_time + 3000)){
         disp_write("soak stage");
+        if ((millis() - start_time) < (curve_needed.soak_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.soak_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.soak_temp);
       }
@@ -765,6 +766,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.ramp_to_reflow_temp));
       if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 3000)){
         disp_write("ramp stage");
+        if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.ramp_to_reflow_temp);
       }
@@ -772,6 +778,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.reflow_temp));
       if ((millis() - start_time) < (curve_needed.reflow_time + 3000)){
         disp_write("reflow stage");
+        if ((millis() - start_time) < (curve_needed.reflow_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.reflow_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.reflow_temp);
       }
@@ -779,6 +790,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.cooling_temp));
       if ((millis() - start_time) < (curve_needed.cooling_time + 3000)){
         disp_write("cooling stage");
+        if ((millis() - start_time) < (curve_needed.cooling_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.cooling_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.cooling_temp);
       }
@@ -808,6 +824,8 @@ int reflow_control (struct curve curve_needed) {
           io_call(ovlight, write, low);
           io_call(status_led_g, write, high);
           io_call(status_led_r, write, low);
+          io_call(htr_1, write, low);
+          io_call(htr_2, write, low);
           delay (1000);
           return 0;          
         }
@@ -827,6 +845,8 @@ int reflow_control (struct curve curve_needed) {
   io_call(ovlight, write, low);
   io_call(status_led_g, write, high);
   io_call(status_led_r, write, low);
+  io_call(htr_1, write, low);
+  io_call(htr_2, write, low);
   
   return 0;
     
@@ -1046,7 +1066,7 @@ void loop() {
         //IPAddress ip = WiFi.localIP();
         //String ip_str = ip.toString();
         //disp_write((char*)ip_str.c_str());
-        disp_write("ip test");
+        disp_write("192.168.202.202");
         delay (3000);
         break;
       default:
