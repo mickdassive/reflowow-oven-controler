@@ -199,7 +199,8 @@ char* prev_disp;
 enum MenuOptions {
   CURVE_63_37,
   DISPLAY_IP,
-  FIRMWARE_VERSION
+  FIRMWARE_VERSION,
+  SET_HOLD
 };
 
 
@@ -857,6 +858,30 @@ int reflow_control (struct curve curve_needed) {
 
 // oven preheat/hold
 int temp_hold () {
+
+  int setpoint = 0;
+  char buffer[10];
+
+  disp_write("enter set-point");
+
+  delay(3000);
+
+  while (debounce(ent_btn) == HIGH) {
+    if (debounce(up_btn) == LOW){
+      setpoint++;
+    } else if (debounce(dwn_btn) == LOW) {
+      setpoint--;
+    }
+    
+    Serial.println(setpoint);
+
+    sprintf(buffer, "%d", setpoint);
+    char* set_str = buffer;
+
+    disp_write(set_str);
+  }
+
+  
 return 0;
 }
 
@@ -1095,6 +1120,9 @@ void loop() {
     case FIRMWARE_VERSION:
       disp_write(firmware_v);
       break;
+    case SET_HOLD:
+      disp_write("set-point hold");
+      break;
     default:
       disp_write("error");
       break;
@@ -1102,7 +1130,7 @@ void loop() {
 
   // check for button press
   if (debounce(up_btn) == LOW) {
-    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : (menuOption == DISPLAY_IP) ? FIRMWARE_VERSION : CURVE_63_37;
+    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : (menuOption == DISPLAY_IP) ? FIRMWARE_VERSION : (menuOption == FIRMWARE_VERSION) ? SET_HOLD : CURVE_63_37;
   } else if (debounce(ent_btn) == LOW) {
     switch (menuOption) {
       case CURVE_63_37:
@@ -1118,12 +1146,15 @@ void loop() {
       case FIRMWARE_VERSION:
         disp_write(firmware_v);
         break;
+      case SET_HOLD:
+        temp_hold();
+        break;
       default:
         disp_write("error");
         break;
     }
   } else if (debounce(dwn_btn) == LOW) {
-    menuOption = (menuOption == DISPLAY_IP) ? CURVE_63_37 : (menuOption == FIRMWARE_VERSION) ? DISPLAY_IP : FIRMWARE_VERSION;
+    menuOption = (menuOption == DISPLAY_IP) ? CURVE_63_37 : (menuOption == FIRMWARE_VERSION) ? DISPLAY_IP : (menuOption == DISPLAY_IP) ? SET_HOLD : FIRMWARE_VERSION;
   }
 
 
