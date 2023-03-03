@@ -1,4 +1,4 @@
-20601809867114548
+20605176955318762
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -52241,6 +52241,13 @@ EXTRA
 8
 8
 EXTRA
+CONV_RAC04-12SK_277
+
+
+0
+6
+6
+EXTRA
 DF01S-TDICT-ND
 
 
@@ -52254,6 +52261,13 @@ LTC-5723HR
 0
 0
 0
+EXTRA
+RELAY_ALQ112
+
+
+0
+5
+5
 EXTRA
 SCREW_TERM_5MM_2
 

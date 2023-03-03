@@ -202,6 +202,157 @@
         )
       )
     )
+    (symbol "DIPxx-1Axx-11x_1" (in_bom yes) (on_board yes)
+      (property "Reference" "K3" (id 0) (at -1.27 13.97 90)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Value" "ALQ112" (id 1) (at -3.81 11.43 90)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Footprint" "EXTRA:RELAY_ALQ112" (id 2) (at -1.27 -8.89 0)
+        (effects (font (size 1.27 1.27)) (justify left) hide)
+      )
+      (property "Datasheet" "https://standexelectronics.com/wp-content/uploads/datasheet_reed_relay_DIP.pdf" (id 3) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "Single Pole Reed Relay SPST" (id 4) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "Standex Meder DIP reed relay, SPST, Closing Contact" (id 5) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_fp_filters" "Relay*StandexMeder*DIP*LowProfile*" (id 6) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "DIPxx-1Axx-11x_1_0_0"
+        (polyline
+          (pts
+            (xy 5.08 5.08)
+            (xy 5.08 2.54)
+            (xy 4.445 3.175)
+            (xy 5.08 3.81)
+          )
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+      )
+      (symbol "DIPxx-1Axx-11x_1_0_1"
+        (rectangle (start -10.16 5.08) (end 7.62 -5.08)
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type background))
+        )
+        (rectangle (start -8.255 1.905) (end -1.905 -1.905)
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -7.62 -1.905)
+            (xy -2.54 1.905)
+          )
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -5.08 -5.08)
+            (xy -5.08 -1.905)
+          )
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -5.08 5.08)
+            (xy -5.08 1.905)
+          )
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -1.905 0)
+            (xy -1.27 0)
+          )
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -0.635 0)
+            (xy 0 0)
+          )
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.635 0)
+            (xy 1.27 0)
+          )
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 1.905 0)
+            (xy 2.54 0)
+          )
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 3.175 0)
+            (xy 3.81 0)
+          )
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 5.08 -2.54)
+            (xy 3.175 3.81)
+          )
+          (stroke (width 0.508) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 5.08 -2.54)
+            (xy 5.08 -5.08)
+          )
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
+      )
+      (symbol "DIPxx-1Axx-11x_1_1_1"
+        (pin passive line (at -5.08 -7.62 90) (length 2.54)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 5.08 -7.62 90) (length 2.54) hide
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "14" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -5.08 7.62 270) (length 2.54)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 5.08 -7.62 90) (length 2.54)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 5.08 7.62 270) (length 2.54)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 5.08 7.62 270) (length 2.54) hide
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "8" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
     (symbol "Device:C" (pin_numbers hide) (pin_names (offset 0.254)) (in_bom yes) (on_board yes)
       (property "Reference" "C" (id 0) (at 0.635 2.54 0)
         (effects (font (size 1.27 1.27)) (justify left))
@@ -713,13 +864,13 @@
       )
     )
     (symbol "Relay:DIPxx-1Axx-11x" (in_bom yes) (on_board yes)
-      (property "Reference" "K" (id 0) (at 8.89 3.81 0)
-        (effects (font (size 1.27 1.27)) (justify left))
+      (property "Reference" "K4" (id 0) (at 0 13.8598 90)
+        (effects (font (size 1.27 1.27)))
       )
-      (property "Value" "DIPxx-1Axx-11x" (id 1) (at 8.89 1.27 0)
-        (effects (font (size 1.27 1.27)) (justify left))
+      (property "Value" "ALQ112" (id 1) (at 0 11.3229 90)
+        (effects (font (size 1.27 1.27)))
       )
-      (property "Footprint" "Relay_THT:Relay_StandexMeder_DIP_LowProfile" (id 2) (at 8.89 -1.27 0)
+      (property "Footprint" "EXTRA:RELAY_ALQ112" (id 2) (at -1.27 -8.89 0)
         (effects (font (size 1.27 1.27)) (justify left) hide)
       )
       (property "Datasheet" "https://standexelectronics.com/wp-content/uploads/datasheet_reed_relay_DIP.pdf" (id 3) (at 0 0 0)
@@ -837,7 +988,7 @@
         )
       )
       (symbol "DIPxx-1Axx-11x_1_1"
-        (pin passive line (at 5.08 -7.62 90) (length 2.54)
+        (pin passive line (at -5.08 -7.62 90) (length 2.54)
           (name "~" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
@@ -845,17 +996,17 @@
           (name "~" (effects (font (size 1.27 1.27))))
           (number "14" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 -7.62 90) (length 2.54)
+        (pin passive line (at -5.08 7.62 270) (length 2.54)
           (name "~" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line (at -5.08 7.62 270) (length 2.54)
+        (pin passive line (at 5.08 -7.62 90) (length 2.54)
           (name "~" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
         )
         (pin passive line (at 5.08 7.62 270) (length 2.54)
           (name "~" (effects (font (size 1.27 1.27))))
-          (number "7" (effects (font (size 1.27 1.27))))
+          (number "5" (effects (font (size 1.27 1.27))))
         )
         (pin passive line (at 5.08 7.62 270) (length 2.54) hide
           (name "~" (effects (font (size 1.27 1.27))))
@@ -2759,8 +2910,8 @@
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 453c3e72-917a-4797-8ce4-f86e2c24954f)
     (property "Reference" "K2" (id 0) (at 43.18 106.7902 90))
-    (property "Value" "OZ-SS-112L1" (id 1) (at 43.18 109.3271 90))
-    (property "Footprint" "EXTRA:0Z-SS-112L1" (id 2) (at 43.18 125.73 0)
+    (property "Value" "J114FL1CS1612VDC" (id 1) (at 43.18 109.3271 90))
+    (property "Footprint" "EXTRA:J114FL1CS1612VDC" (id 2) (at 43.18 125.73 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://content.kemet.com/datasheets/KEM_R7002_EC2_EE2.pdf" (id 3) (at 43.18 125.73 0)
@@ -3063,21 +3214,21 @@
   )
 
   (symbol (lib_id "Relay:DIPxx-1Axx-11x") (at 115.57 182.88 270) (unit 1)
-    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (in_bom yes) (on_board yes)
     (uuid 710334c0-6b3e-4dd3-a996-04f66b02ad1e)
-    (property "Reference" "K4" (id 0) (at 115.57 169.0202 90))
-    (property "Value" "0J-SS-112LWHF" (id 1) (at 115.57 171.5571 90))
-    (property "Footprint" "EXTRA:0J-SS-112LWHF" (id 2) (at 114.3 191.77 0)
+    (property "Reference" "K4" (id 0) (at 115.57 170.18 90))
+    (property "Value" "ALQ112" (id 1) (at 115.57 171.45 90))
+    (property "Footprint" "EXTRA:RELAY_ALQ112" (id 2) (at 106.68 181.61 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (property "Datasheet" "https://standexelectronics.com/wp-content/uploads/datasheet_reed_relay_DIP.pdf" (id 3) (at 115.57 182.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 508752e5-5f3e-44e6-8436-c2532724c1c2))
+    (pin "3" (uuid 9001b988-759d-45f6-8e3e-8bffd486ead8))
     (pin "14" (uuid 897e558f-31ec-4c4b-b1a3-c25fe3e474be))
+    (pin "1" (uuid 508752e5-5f3e-44e6-8436-c2532724c1c2))
     (pin "2" (uuid 5137aea8-686a-4b9b-b4bb-484695e54b2e))
-    (pin "6" (uuid f54d9eb9-065d-4fd1-94cd-f6c477200ad4))
-    (pin "7" (uuid 86e07bf3-bd22-438d-bdc0-27ccba5d2590))
+    (pin "5" (uuid d1c50a0b-7ade-409e-a632-82d1f33fe8f0))
     (pin "8" (uuid dbac24f6-42c2-4ca3-96c6-5a95d87cd704))
   )
 
@@ -3187,8 +3338,8 @@
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 9da22ad3-a64f-451f-b085-09bcd5c40f91)
     (property "Reference" "K1" (id 0) (at 43.18 45.8302 90))
-    (property "Value" "OZ-SS-112L1" (id 1) (at 43.18 48.3671 90))
-    (property "Footprint" "EXTRA:0Z-SS-112L1" (id 2) (at 43.18 64.77 0)
+    (property "Value" "J114FL1CS1612VDC" (id 1) (at 43.18 48.3671 90))
+    (property "Footprint" "EXTRA:J114FL1CS1612VDC" (id 2) (at 43.18 64.77 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://content.kemet.com/datasheets/KEM_R7002_EC2_EE2.pdf" (id 3) (at 43.18 64.77 0)
@@ -3648,26 +3799,26 @@
     (pin "2" (uuid bd78b3f6-aeb1-4dde-8012-0a921bd896d8))
   )
 
-  (symbol (lib_id "Relay:DIPxx-1Axx-11x") (at 43.18 182.88 270) (unit 1)
+  (symbol (lib_name "DIPxx-1Axx-11x_1") (lib_id "Relay:DIPxx-1Axx-11x") (at 43.18 182.88 270) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid ffbed38a-ca0d-4e47-8114-70b94444bb9b)
     (property "Reference" "K3" (id 0) (at 41.91 168.91 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "SDT-SS-112DM" (id 1) (at 35.56 171.45 90)
+    (property "Value" "ALQ112" (id 1) (at 39.37 171.45 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "EXTRA:SDT-SS-112DM" (id 2) (at 41.91 191.77 0)
+    (property "Footprint" "EXTRA:RELAY_ALQ112" (id 2) (at 34.29 181.61 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (property "Datasheet" "https://standexelectronics.com/wp-content/uploads/datasheet_reed_relay_DIP.pdf" (id 3) (at 43.18 182.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 9f18bbbf-ffd7-4e64-813f-4b5d133439aa))
+    (pin "3" (uuid 2b2603bb-d5a7-49f9-b15e-7ae0ad760a28))
     (pin "14" (uuid 3b4e2ce7-1919-4f3b-b6bb-e8b075f5eec5))
+    (pin "1" (uuid 9f18bbbf-ffd7-4e64-813f-4b5d133439aa))
     (pin "2" (uuid eeedb154-108d-4971-904c-44724275a162))
-    (pin "6" (uuid 775a3a9d-b4ab-4139-afe0-7e2a1279608f))
-    (pin "7" (uuid bc255d20-b1a1-40e2-a9f3-6cbbca121077))
+    (pin "5" (uuid 5de3d081-c01d-4300-ac9c-b7566033633e))
     (pin "8" (uuid c6933e20-0d9c-4392-96bc-9794ea4e1ed9))
   )
 
@@ -3769,20 +3920,8 @@
     (path "/b494a33e-e29b-41c6-a17c-ed58ecdc10e9"
       (reference "#PWR018") (unit 1) (value "GND") (footprint "")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/2a3290b7-f3c5-4754-9cd2-9b15f9f7f898"
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/ecc2559f-00ea-4d69-9d19-dd072207d312"
       (reference "#PWR019") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/5a4bee57-6ae6-45fd-952f-9d0605aabed4"
-      (reference "#PWR020") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/ff532536-231a-46ce-a509-89e447f5ff38"
-      (reference "#PWR021") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/6155d925-3771-4b53-91f9-967562c327f4"
-      (reference "#PWR022") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/99701a4c-f1da-4af5-a360-12572d44de0c"
-      (reference "#PWR023") (unit 1) (value "GND") (footprint "")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/fe1b9904-0387-432f-85b8-97deaacba8af"
       (reference "#PWR024") (unit 1) (value "GND") (footprint "")
@@ -3790,17 +3929,11 @@
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/890354b3-15e9-4eb0-86ad-c8b1b1835fb9"
       (reference "#PWR025") (unit 1) (value "GND") (footprint "")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/0eef51b7-7a1d-493d-821a-0122ee09dc4d"
-      (reference "#PWR026") (unit 1) (value "GND") (footprint "")
-    )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/7f4629fc-58e3-4ce7-ab26-d33e83b558e3"
       (reference "#PWR027") (unit 1) (value "GND") (footprint "")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/5b6091bd-8d01-4e4c-813b-f1c2d001a6c0"
       (reference "#PWR028") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/887bb3a7-8689-4d8a-baeb-674f18a4936b"
-      (reference "#PWR029") (unit 1) (value "GND") (footprint "")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/32f4fabd-8f1d-47be-ad0f-d4d7df28e1ff"
       (reference "#PWR030") (unit 1) (value "GND") (footprint "")
@@ -3904,12 +4037,6 @@
     (path "/e4db0eb0-6633-412c-9d75-8a4861237f43"
       (reference "#PWR063") (unit 1) (value "GND") (footprint "")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/a0063920-4e58-485d-a493-ad99826ab09a"
-      (reference "#PWR064") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/48616144-5aa5-4180-bdee-87ef04d7300c"
-      (reference "#PWR065") (unit 1) (value "GND") (footprint "")
-    )
     (path "/9e9c5bab-137b-4e96-8dfe-18bd3679817b/d00f1159-f18e-4b48-8830-ff25e7d44275"
       (reference "#PWR0101") (unit 1) (value "GND") (footprint "")
     )
@@ -3928,23 +4055,11 @@
     (path "/2e3b4b83-bc81-415f-af7c-9cc9e53a5d7c"
       (reference "C5") (unit 1) (value "10UF") (footprint "Capacitor_SMD:C_0603_1608Metric")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/20945ffe-c7fa-4482-929d-59b50418dd84"
-      (reference "C6") (unit 1) (value "10000UF") (footprint "Capacitor_THT:CP_Radial_D35.0mm_P10.00mm_SnapIn")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/b98c196f-e11d-4a79-baef-ac8645f90827"
-      (reference "C7") (unit 1) (value "10000UF") (footprint "Capacitor_THT:CP_Radial_D35.0mm_P10.00mm_SnapIn")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/9b243d5f-3ee7-410c-a8d1-f46e7e43f750"
-      (reference "C8") (unit 1) (value "10UF") (footprint "Capacitor_SMD:C_0603_1608Metric")
-    )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/b2d8bbee-f301-479c-905b-25380c089fd1"
       (reference "C9") (unit 1) (value "10UF") (footprint "Capacitor_SMD:C_0603_1608Metric")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/d70816f7-f930-4b54-a6f1-e5cfc9690379"
       (reference "C10") (unit 1) (value "10UF") (footprint "Capacitor_SMD:C_0603_1608Metric")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/d004e885-17af-4aff-9450-06c283982f1e"
-      (reference "C11") (unit 1) (value "10UF") (footprint "Capacitor_SMD:C_0603_1608Metric")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/a4b7ca7c-4b8b-49a3-ad6d-10180b429e8c"
       (reference "C12") (unit 1) (value "22UF") (footprint "Capacitor_SMD:C_0603_1608Metric")
@@ -3993,12 +4108,6 @@
     )
     (path "/35608da1-ba23-47e2-824b-d22ff552c319"
       (reference "D8") (unit 1) (value "1N4151") (footprint "Diode_SMD:D_0603_1608Metric")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/61998bc4-a7b0-4bd9-9442-c5986c9d4b7b"
-      (reference "D9") (unit 1) (value "D_Bridge_+-AA") (footprint "EXTRA:DF01S-TDICT-ND")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/578fd435-4f6c-4f4a-ad5b-e5591f03b841"
-      (reference "D10") (unit 1) (value "D_Bridge_+-AA") (footprint "EXTRA:DF01S-TDICT-ND")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/2b930b23-e643-4867-8198-f0888ac24eae"
       (reference "D11") (unit 1) (value "+12V_PWRGOOD_G") (footprint "Diode_SMD:D_0603_1608Metric")
@@ -4067,16 +4176,19 @@
       (reference "J6") (unit 1) (value "Conn_01x07") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x07_P2.54mm_Vertical")
     )
     (path "/9da22ad3-a64f-451f-b085-09bcd5c40f91"
-      (reference "K1") (unit 1) (value "OZ-SS-112L1") (footprint "EXTRA:0Z-SS-112L1")
+      (reference "K1") (unit 1) (value "J114FL1CS1612VDC") (footprint "EXTRA:J114FL1CS1612VDC")
     )
     (path "/453c3e72-917a-4797-8ce4-f86e2c24954f"
-      (reference "K2") (unit 1) (value "OZ-SS-112L1") (footprint "EXTRA:0Z-SS-112L1")
+      (reference "K2") (unit 1) (value "J114FL1CS1612VDC") (footprint "EXTRA:J114FL1CS1612VDC")
     )
     (path "/ffbed38a-ca0d-4e47-8114-70b94444bb9b"
-      (reference "K3") (unit 1) (value "SDT-SS-112DM") (footprint "EXTRA:SDT-SS-112DM")
+      (reference "K3") (unit 1) (value "ALQ112") (footprint "EXTRA:RELAY_ALQ112")
     )
     (path "/710334c0-6b3e-4dd3-a996-04f66b02ad1e"
-      (reference "K4") (unit 1) (value "0J-SS-112LWHF") (footprint "EXTRA:0J-SS-112LWHF")
+      (reference "K4") (unit 1) (value "ALQ112") (footprint "EXTRA:RELAY_ALQ112")
+    )
+    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/88bfffd5-0c0b-4acc-abbb-ff75c6e08805"
+      (reference "PS1") (unit 1) (value "RAC04-12SK/277") (footprint "EXTRA:CONV_RAC04-12SK_277")
     )
     (path "/4dd03e17-74c1-4466-8794-71c1be7e50b9"
       (reference "Q1") (unit 1) (value "RE1C002UNTCL") (footprint "Package_TO_SOT_SMD:SOT-416")
@@ -4180,18 +4292,6 @@
     (path "/9038edf0-db9c-4acb-bfb3-57c9af7f3c02"
       (reference "R25") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/6350b5fb-1614-441d-8fee-93c96ffd3d5b"
-      (reference "R26") (unit 1) (value "2K2") (footprint "Resistor_SMD:R_0603_1608Metric")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/6cc32bed-ed2d-4dca-b240-3e58b8e8e294"
-      (reference "R27") (unit 1) (value "660R") (footprint "Resistor_SMD:R_0603_1608Metric")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/96d01f24-0b0d-4770-8f47-a2496032b930"
-      (reference "R28") (unit 1) (value "2K2") (footprint "Resistor_SMD:R_0603_1608Metric")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/36920a73-ebb2-4c7b-a2e5-9932a24f9859"
-      (reference "R29") (unit 1) (value "660R") (footprint "Resistor_SMD:R_0603_1608Metric")
-    )
     (path "/9e9c5bab-137b-4e96-8dfe-18bd3679817b/889c49ee-b10e-48de-89e5-c6665eb4ea6d"
       (reference "R30") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
@@ -4222,26 +4322,8 @@
     (path "/0eb67503-9491-4e83-af47-5408c6b6ea66"
       (reference "TP1") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/9236f4eb-85b7-425b-908c-1d40519563ac"
-      (reference "TP2") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/ff73174d-9f6e-4d5e-b844-2bfb287815cf"
-      (reference "TP3") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/c5ea8a19-a0bc-4776-ac52-d3031b2d7a56"
-      (reference "TP4") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/0bdb1321-b3dc-4545-94b5-0df633bb71f3"
-      (reference "TP5") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/c8975162-3079-4893-b378-8dc7b0d1d2e9"
-      (reference "TP6") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
-    )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/19e015af-53fb-43a1-bbac-fecc7aed133e"
       (reference "TP7") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/5754b9b9-ec95-4e2b-aabc-1e17dd55fde3"
-      (reference "TP8") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/a0fbface-c177-4996-a8ce-6539780663f9"
       (reference "TP9") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
@@ -4279,17 +4361,11 @@
     (path "/d3090971-cbeb-4b24-8c53-4014215f0f8b"
       (reference "TP20") (unit 1) (value "TestPoint") (footprint "TestPoint:TestPoint_Pad_D2.0mm")
     )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/dd1fbf00-1f19-418e-b385-0ce6150dd5f6"
-      (reference "TRE1") (unit 1) (value "WDB41-18") (footprint "EXTRA:WDB41-18")
-    )
     (path "/45a68fe7-7cf6-406b-8070-f3480c05ed2b"
       (reference "U1") (unit 1) (value "ESP-12F") (footprint "RF_Module:ESP-12E")
     )
     (path "/ebbf8e42-fab8-4ebf-9b50-c5f1ada40eb5"
       (reference "U2") (unit 1) (value "AD8495") (footprint "Package_SO:MSOP-8_3x3mm_P0.65mm")
-    )
-    (path "/b522862e-bc48-47cf-bf94-97458c8d292b/2fba3ede-025f-479a-ae87-bb6628f966c6"
-      (reference "U3") (unit 1) (value "MC7812BDTRKG") (footprint "Package_TO_SOT_SMD:TO-252-3_TabPin2")
     )
     (path "/b522862e-bc48-47cf-bf94-97458c8d292b/ddcd12f9-5c5b-4a9e-a12f-94da6e40e12d"
       (reference "U4") (unit 1) (value "AZ1117CD-3.3TRG1") (footprint "Package_TO_SOT_SMD:TO-252-3_TabPin2")

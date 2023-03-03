@@ -460,13 +460,13 @@ void disp_blank() {
 // to_write: string to be witten to the display
 // currently only supports max 16 cahricter input as of right now will add sepping at a later time
 char disp_write(char* to_write) {
-
+/*
   if (to_write == prev_disp) {
     return 0;
   } else {
-    prev_disp = to_write;
+    prev_disp = to_write; //i think this is un nneded????????
   }
-
+*/
   disp_blank();
 
   // defines
@@ -860,7 +860,7 @@ int reflow_control (struct curve curve_needed) {
 int temp_hold () {
 
   int setpoint = 0;
-  char buffer[10];
+  unsigned long start_time;
 
   disp_write("enter set-point");
 
@@ -875,13 +875,33 @@ int temp_hold () {
     
     Serial.println(setpoint);
 
-    sprintf(buffer, "%d", setpoint);
-    char* set_str = buffer;
-
-    disp_write(set_str);
+    disp_write_2_line(setpoint, setpoint);
   }
 
-  
+  start_time = millis();
+  io_call(status_led_g, write, low);
+  io_call(status_led_r, write, high);
+
+  disp_write("enter to exit");
+  delay(2000);
+  disp_write("begin pre-heat");
+  delay(3000);
+
+  while (debounce(ent_btn) == HIGH) {
+    if (current_temp() > (setpoint + 10) && current_temp() < (setpoint - 10)) {
+      disp_write("done heating");
+      io_call(ovlight, write, high);
+      delay (1000);
+      io_call(ovlight, write, low);
+    } else {
+      heater_control(pid(setpoint));
+      disp_write_2_line(current_temp(), setpoint);
+    }
+
+  }
+
+  delay(1000);
+  io_call(status_led_r, write, low);
 return 0;
 }
 
