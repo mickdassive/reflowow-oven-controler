@@ -17,7 +17,6 @@
 // 1/9/2023
 // Tokyo Andreana
 
-/*
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -28,169 +27,17 @@
 #include <string.h>
 #include <string>
 #include <iostream>
-
-
-// I2C address of the I/O expander
-const uint8_t IO_EXPANDER_ADDRESS = 0x20;
-
-void setup() {
-  // start serial
-  Serial.begin(115200);
-  Serial.println(" ");
-  Serial.println(" ");
-  Serial.println("serial started");
-
-  // start i2c
-  Wire.begin(4, 2);
-  Wire.setClock(10);
-  Serial.println("i2c started");
-
-
-}
-
-void loop() {
-  // Read state of port 0
-  Wire.beginTransmission(0x20);
-  Wire.write(0x00);
-  Wire.endTransmission();
-  Wire.requestFrom(0x20, 1);
-  byte port0 = Wire.read();
-
-  // Read state of port 1
-  Wire.beginTransmission(0x20);
-  Wire.write(0x01);
-  Wire.endTransmission();
-  Wire.requestFrom(0x20, 1);
-  byte port1 = Wire.read();
-
-  // Output state of ports to terminal
-
-  Serial.print("Port 0: ");
-  Serial.println(port0, BIN);
-  Serial.print("Port 1: ");
-  Serial.println(port1, BIN);
-
-
-  delay(1000);
-}
-
-
-
-
-
-
-
-void setup() {
-  // start serial
-  Serial.begin(115200);
-  Serial.println(" ");
-  Serial.println(" ");
-  Serial.println("serial started");
-
-  // start i2c
-  Wire.begin(4, 2);
-  Wire.setClock(10);
-  Serial.println("i2c started");
-
-
-
-  // Configure all pins of the I/O expander as inputs
-  Wire.beginTransmission(0x20); // I/O expander address
-  Wire.write(0x06); // Configuration register for port 0
-  Wire.write(0x00); // Set all bits to 1 for input
-  Wire.endTransmission();
-
-  Wire.beginTransmission(0x20); // I/O expander address
-  Wire.write(0x07); // Configuration register for port 1
-  Wire.write(0x00); // Set all bits to 1 for input
-  Wire.endTransmission();
-
-
-}
-
-void loop() {
-
-  // Set all outputs of port 0 to high
-  Wire.beginTransmission(0x20);
-  Wire.write(0x02); // Output register address
-  Wire.write(0xff); // Set all bits to high
-  Wire.endTransmission();
-  Wire.beginTransmission(0x20);
-  Wire.write(0x03); // Output register address
-  Wire.write(0xff); // Set all bits to high
-  Wire.endTransmission();
-  
- 
-  delay(1000);
-
-  // Set all outputs of port 0 to low
-  Wire.beginTransmission(0x20);
-  Wire.write(0x02); // Output register address
-  Wire.write(0x00); // Set all bits to low
-  Wire.endTransmission();
-  Wire.beginTransmission(0x20);
-  Wire.write(0x03); // Output register address
-  Wire.write(0x00); // Set all bits to low
-  Wire.endTransmission();
-
-
-  delay(1000);
-
-
-}
-
-
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-//{reflow oven firmware}
-//Copyright (C) {2023}  {mickmake}
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// reflow oven firmware
-// v0.1
-// 1/9/2023
-// Tokyo Andreana
-
-
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-#include <LittleFS.h>
-#include <Wire.h>
-#include <stdint.h>
-#include <string.h>
-#include <string>
-#include <iostream>
+#include <cstring>
+#include <iomanip>
+#include <sstream>
 
 
 const char* ssid = "xxxx";
 const char* password = "xxxx";
 
 ESP8266WebServer server(80);
+
+char* firmware_v = "firmware v 0.1";
 
 //iox defines
 const uint8_t iox_read_add = 0x21;
@@ -235,23 +82,23 @@ struct pin scl = {0b0, 0, 2, true};
 struct pin htr_1 = {0b0, 0, 13, true};
 struct pin htr_2 = {0b0, 0, 12, true};
 struct pin fan = {0b0, 0, 5, true};
-struct pin ovlight = {0b00000001, 1, 20, false};
+struct pin ovlight = {0b10000000, 1, 20, false};
 // struct pin onboard_led = {0b0, 0, 2, true};
-struct pin wifi_led_g = {0b00010000, 1, 16, false};
-struct pin wifi_led_or = {0b00100000, 1, 15, false};
-struct pin wifi_led_r = {0b01000000, 1, 14, false};
-struct pin status_led_g = {0b10000000, 1, 13, false};
-struct pin status_led_r = {0b00000001, 0, 11, false};
-struct pin up_btn = {0b00000010, 1, 19, false};
-struct pin dwn_btn = {0b00000100, 1, 18, false};
-struct pin ent_btn = {0b00001000, 1, 17, false};
-struct pin io_00 = {0b10000000, 0, 4, false};
-struct pin io_01 = {0b01000000, 0, 5, false};
-struct pin io_02 = {0b00100000, 0, 6, false};
-struct pin io_03 = {0b00010000, 0, 7, false};
-struct pin io_04 = {0b00001000, 0, 8, false};
-struct pin io_05 = {0b00000100, 0, 9, false};
-struct pin io_06 = {0b00000010, 0, 10, false};
+struct pin wifi_led_g = {0b00001000, 1, 16, false};
+struct pin wifi_led_or = {0b00000100, 1, 15, false};
+struct pin wifi_led_r = {0b00000010, 1, 14, false};
+struct pin status_led_g = {0b00000001, 1, 13, false};
+struct pin status_led_r = {0b10000000, 0, 11, false};
+struct pin up_btn = {0b01000000, 1, 19, false};
+struct pin dwn_btn = {0b00100000, 1, 18, false};
+struct pin ent_btn = {0b00010000, 1, 17, false};
+struct pin io_00 = {0b00000001, 0, 4, false};
+struct pin io_01 = {0b00000010, 0, 5, false};
+struct pin io_02 = {0b00000100, 0, 6, false};
+struct pin io_03 = {0b00001000, 0, 7, false};
+struct pin io_04 = {0b00010000, 0, 8, false};
+struct pin io_05 = {0b00100000, 0, 9, false};
+struct pin io_06 = {0b01000000, 0, 10, false};
 
 // read write enum define for io_call function
 enum read_write {
@@ -271,7 +118,7 @@ int adc_pin = A0;
 float adc_offset = -9;  //offset in deg c to copensete for termocuppel inconsisntancy
 
 //pid gain
-float Kp = 1;  //proportional
+float Kp = 0.5;  //proportional
 float Ki = 0.1;  //integral
 float Kd = 0.5;  //derivative
 float DT = 0.01; //pid measurement time (seconds)
@@ -301,9 +148,9 @@ struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 235, 210000
 // 7 seg diplay defines
 const uint8_t disp_base_add_w = 0b00000000;
 const uint8_t disp_base_add_r = 0b00000001;
-const uint8_t disp_1_add_w = 0b00000100;
+const uint8_t disp_1_add_w = 0x02;
 const uint8_t disp_1_add_r = 0b00000101;
-const uint8_t disp_2_add_w = 0b00000010;
+const uint8_t disp_2_add_w = 0x01;
 const uint8_t disp_2_add_r = 0b00000011;
 
 // digit write registers
@@ -347,54 +194,14 @@ const uint8_t disp_down = 0x80;
 const uint8_t disp_up_rst = 0x01;
 const uint8_t disp_up = 0x81;
 
-// char bytes for 7 segment display
-// dp is autimaticly attched durring the disp_write function
-// segment map {0b, DP, A, B, C, D, E, F, G}
-//   a
-//  ___
-// f|g|b
-//  ___
-// e|d|c
-//  ___DP
-const uint8_t char_0 = 0b01111110;
-const uint8_t char_1 = 0b00110000;
-const uint8_t char_2 = 0b01101101;
-const uint8_t char_3 = 0b01111001;
-const uint8_t char_4 = 0b00110011;
-const uint8_t char_5 = 0b01011011;
-const uint8_t char_6 = 0b01011111;
-const uint8_t char_7 = 0b01110000;
-const uint8_t char_8 = 0b01111111;
-const uint8_t char_9 = 0b01111011;
-const uint8_t char_dp = 0b10000000;
-const uint8_t char_dash = 0b00000001;
-const uint8_t char_a = 0b01111101;
-const uint8_t char_b = 0b00011111;
-const uint8_t char_c = 0b00001101;
-const uint8_t char_e = 0b01001111;
-const uint8_t char_f = 0b01000111;
-const uint8_t char_g = 0b01011110;
-const uint8_t char_h = 0b00010111;
-const uint8_t char_i = 0b00000110;
-const uint8_t char_j = 0b01011000;
-const uint8_t char_k = 0b01010111;
-const uint8_t char_l = 0b00001110;
-const uint8_t char_m = 0b01010101;
-const uint8_t char_n = 0b00010101;
-const uint8_t char_o = 0b00011101;
-const uint8_t char_p = 0b01100111;
-const uint8_t char_q = 0b01110011;
-const uint8_t char_r = 0b00000101;
-const uint8_t char_s = 0b01101101;
-const uint8_t char_t = 0b00001111;
-const uint8_t char_u = 0b00011100;
-const uint8_t char_v = 0b00101010;
-const uint8_t char_w = 0b00101011;
-const uint8_t char_x = 0b00010100;
-const uint8_t char_y = 0b00111011;
-const uint8_t char_z = 0b01101100;
-const uint8_t char_space = 0b00000000;
-const uint8_t char_qwst = 0b11110010; // already includes decimal
+char* prev_disp;
+
+enum MenuOptions {
+  CURVE_63_37,
+  DISPLAY_IP,
+  FIRMWARE_VERSION,
+  SET_HOLD
+};
 
 
 
@@ -459,23 +266,26 @@ int io_call(struct pin pin_needed, enum read_write read_write, enum high_low hig
       // int local varibels
       uint8_t current = read_current_io_state(pin_needed.port); // read and store the current state of the output register of the the given pin
       uint8_t output = 0b00000000;
+      uint8_t mask_not = ~pin_needed.mask;
+      uint8_t port_reg = 0x00;
 
       // bitwise logic to ether set high or low a given pin
       if (high_low == high) {
         output = current | pin_needed.mask;
       } else if (high_low == low){
-        output = current & pin_needed.mask;
+        output = current & mask_not;
       }
-
-      
-      Wire.beginTransmission(iox_write_add);  // begin write to iox
 
       // write to port 0 or 1 based on the given pins's struct 
       if (pin_needed.port == 0) {
-        Wire.write(iox_output_port_0);
+        port_reg = iox_output_port_0;
       } else if (pin_needed.port == 1) {
-        Wire.write(iox_output_port_1);
+        port_reg = iox_output_port_1;
       }
+
+      Wire.beginTransmission(iox_write_add);  // begin write to iox
+
+      Wire.write(port_reg);
 
       Wire.write(output);
 
@@ -566,27 +376,105 @@ float pid(float setpoint) {
   derivitve = (error - lasterror) / DT;
   lasterror = error;
 
-  float output = Kp * error + Ki * integral + Kd * derivitve;
+  float output1 = Kp * error + Ki * integral + Kd * derivitve;
 
-  //output = constrain (output, -1.0, 1.0);
-  output = map (output, low_range, high_range, -1, 1);
+  output1 = constrain (output1, low_range, high_range);
+  float output2 = map(output1, low_range, high_range, -1, 1);
 
-  return (output);
+  return (output2);
 
+}
+
+// display blanking function
+// just writes 0s to all digit registers on both display drivers resulting in no segments being on
+void disp_blank() {
+
+
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_0);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_1);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_2);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_3);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_4);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_5);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_6);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_1_add_w);
+  Wire.write(disp_digit_7);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_0);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_1);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_2);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_3);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_4);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_5);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_6);
+  Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(disp_2_add_w);
+  Wire.write(disp_digit_7);
+  Wire.write(0x00);
+  Wire.endTransmission();
 }
 
 // display write function
 // to_write: string to be witten to the display
 // currently only supports max 16 cahricter input as of right now will add sepping at a later time
 char disp_write(char* to_write) {
-
-  Serial.println("display write called");
+/*
+  if (to_write == prev_disp) {
+    return 0;
+  } else {
+    prev_disp = to_write; //i think this is un nneded????????
+  }
+*/
+  disp_blank();
 
   // defines
   int to_write_len = strlen(to_write);
   char string[to_write_len];
-  int decimal_counter = 0;
+  int decimal_counter = 1;
   int decimal_pos[to_write_len];
+  int decimal_shift = 0;
   uint8_t dig_byte[to_write_len];
 
   for (int j = 0; j < to_write_len; j++) { // write all 0s to the decimal and dig_dyte array
@@ -599,28 +487,119 @@ char disp_write(char* to_write) {
     // will load and given cahricter of the input sting in to an array
     // includes logic to bind the approprite designater for spaces decimal points dashes and qwestion marks
     if (to_write[i] == '.') {
-      decimal_counter++;
-      decimal_pos[(i - 1) - decimal_counter] = 1;
-    } else if (to_write[i] == ' ') {
-      string[i] = 'space';
-    } else if (to_write[i] == '-') {
-      string[i] = 'dash';
-    } else if (to_write[i] == '?') {
-      string[i] = 'qwst';
+      decimal_pos[i - (1 + decimal_shift)] = 1;
+      decimal_shift++;
     } else {
-      string[i] = to_write[i];
+      string[i - decimal_shift] = to_write[i];
+      //decimal_shift = 0;
     }
-  }
 
+  }
+ 
   for (int k = 0; k < to_write_len; k++) {  // translate form text to bytes
-    char current_char = 'char_' + string[k];
+    
+    //ive tryed to come up with a better way to do this but ive just given up and am gunna do it the stupid way
+
+    // segment map {0b, DP, A, B, C, D, E, F, G}
+    //   a
+    //  ___
+    // f|g|b
+    //  ___
+    // e|d|c
+    //  ___DP
+    
+    uint8_t current_char = 0b0;
+    
+    if (string[k] == '0') {
+      current_char = 0b01111110;
+    } else if (string[k] == '1') {
+      current_char = 0b00110000;
+    } else if (string[k] == '2') {
+      current_char = 0b01101101;
+    } else if (string[k] == '3') {
+      current_char = 0b01111001;
+    } else if (string[k] == '4') {
+      current_char = 0b00110011;
+    } else if (string[k] == '5') {
+      current_char = 0b01011011;
+    } else if (string[k] == '6') {
+      current_char = 0b01011111;
+    } else if (string[k] == '7') {
+      current_char = 0b01110000;
+    } else if (string[k] == '8') {
+      current_char = 0b01111111;
+    } else if (string[k] == '9') {
+      current_char = 0b01111011;
+    } else if (string[k] == '-') {
+      current_char = 0b00000001;
+    } else if (string[k] == 'a') {
+      current_char = 0b01111101;
+    } else if (string[k] == 'b') {
+      current_char = 0b00011111;
+    } else if (string[k] == 'c') {
+      current_char = 0b00001101;
+    } else if (string[k] == 'd') {
+      current_char = 0b00111101;
+    } else if (string[k] == 'e') {
+      current_char = 0b01001111;
+    } else if (string[k] == 'f') {
+      current_char = 0b01000111;
+    } else if (string[k] == 'g') {
+      current_char = 0b01011110;
+    } else if (string[k] == 'h') {
+      current_char = 0b00010111;
+    } else if (string[k] == 'i') {
+      current_char = 0b00000110;
+    } else if (string[k] == 'j') {
+      current_char = 0b01011000;
+    } else if (string[k] == 'k') {
+      current_char = 0b01010111;
+    } else if (string[k] == 'l') {
+      current_char = 0b00001110;
+    } else if (string[k] == 'm') {
+      current_char = 0b01010101;
+    } else if (string[k] == 'n') {
+      current_char = 0b00010101;
+    } else if (string[k] == 'o') {
+      current_char = 0b00011101;
+    } else if (string[k] == 'p') {
+      current_char = 0b01100111;
+    } else if (string[k] == 'q') {
+      current_char = 0b01110011;
+    } else if (string[k] == 'r') {
+      current_char = 0b00000101;
+    } else if (string[k] == 's') {
+      current_char = 0b01101101;
+    } else if (string[k] == 't') {
+      current_char = 0b00001111;
+    } else if (string[k] == 'u') {
+      current_char = 0b00011100;
+    } else if (string[k] == 'v') {
+      current_char = 0b00101010;
+    } else if (string[k] == 'w') {
+      current_char = 0b00101011;
+    } else if (string[k] == 'x') {
+      current_char = 0b00010100;
+    } else if (string[k] == 'y') {
+      current_char = 0b00111011;
+    } else if (string[k] == 'z') {
+      current_char = 0b01101100;
+    } else if (string[k] == ' ') {
+      current_char = 0b00000000;
+    } //else if (string[k] == '?') {
+      //current_char = 0b11110010;
+    //}
+   
+
+
     if (decimal_pos[k] == 1){  // attach decimal point if needed
-      dig_byte[k] = current_char | char_dp;
+      dig_byte[k] = current_char | 0b10000000;
     } else {
       dig_byte[k] = current_char;
-    }    
+    }  
+    
   }
-
+ 
   for (int l = 0; l < to_write_len; l++) {  //write to display 
     if (to_write_len <= (15 + decimal_counter)) {
       if (l == 0) {
@@ -716,93 +695,14 @@ char disp_write(char* to_write) {
 // display 2 line write
 // just takes 2 inputs and put the appropreate number of spaces inbetween
 void disp_write_2_line(float line_1, float line_2) {
-
-  Serial.println("disp 2 line write called");
-
-  int line_1_len = log10(line_1);
-  std::string line_1_str = std::to_string(line_1);
-  std::string line_2_str = std::to_string(line_2);
-  std::string concat = line_1_str;
-  for (int i = 0; i < 8 - line_1_len; i++) {
-    concat += " ";
-  }
-  concat += line_2_str;
-  char* out = new char[concat.length() + 1];
-  strcpy(out, concat.c_str());
-  disp_write(out);
-  delete[] out;
-}
-
-// display blank
-// just writes 0s to all digit registers on both display drivers resulting in no segments being on
-void disp_blank() {
-
-  Serial.println("display blanked");
-
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_0);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_1);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_2);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_3);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_4);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_5);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_6);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_1_add_w);
-  Wire.write(disp_digit_7);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_0);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_1);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_2);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_3);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_4);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_5);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_6);
-  Wire.write(char_space);
-  Wire.endTransmission();
-  Wire.beginTransmission(disp_2_add_w);
-  Wire.write(disp_digit_7);
-  Wire.write(char_space);
-  Wire.endTransmission();
+  std::ostringstream output;
+  output << std::left << std::setw(9) << std::fixed << std::setprecision(2) << line_1;
+  output << std::fixed << std::setprecision(2) << line_2;
+  std::string message = output.str();
+  char* c_message = new char[message.length() + 1];
+  strcpy(c_message, message.c_str());
+  disp_write(c_message);
+  delete[] c_message;
 }
 
 // heater control
@@ -825,8 +725,11 @@ void heater_control (float input) {
 // curve_needed: struct of reflow cure to follow
 int reflow_control (struct curve curve_needed) {
 
-  // turn on oven fan
+  // turn on oven fan and light aswell as cahange the status led
   io_call(fan, write, high);
+  io_call(ovlight, write, high);
+  io_call(status_led_g, write, low);
+  io_call(status_led_r, write, high);
 
   Serial.println("refow loop enterd");
 
@@ -842,8 +745,7 @@ int reflow_control (struct curve curve_needed) {
   // control loop
   while ((millis() - start_time) < curve_needed.end_time) {
 
-    // clear display
-    disp_blank();
+
     
     if ((millis() - start_time) > curve_needed.preheat_time  && (millis() - start_time) < curve_needed.soak_time) {  // preheat stage
       heater_control(pid(curve_needed.preheat_temp));
@@ -856,6 +758,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.soak_temp));
       if ((millis() - start_time) < (curve_needed.soak_time + 3000)){
         disp_write("soak stage");
+        if ((millis() - start_time) < (curve_needed.soak_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.soak_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.soak_temp);
       }
@@ -863,6 +770,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.ramp_to_reflow_temp));
       if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 3000)){
         disp_write("ramp stage");
+        if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.ramp_to_reflow_temp);
       }
@@ -870,6 +782,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.reflow_temp));
       if ((millis() - start_time) < (curve_needed.reflow_time + 3000)){
         disp_write("reflow stage");
+        if ((millis() - start_time) < (curve_needed.reflow_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.reflow_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.reflow_temp);
       }
@@ -877,6 +794,11 @@ int reflow_control (struct curve curve_needed) {
       heater_control(pid(curve_needed.cooling_temp));
       if ((millis() - start_time) < (curve_needed.cooling_time + 3000)){
         disp_write("cooling stage");
+        if ((millis() - start_time) < (curve_needed.cooling_time + 1000)) {
+          io_call(ovlight, write, low);
+        } else if ((millis() - start_time) < (curve_needed.cooling_time + 2000)) {
+          io_call(ovlight, write, high);
+        }
       } else {
         disp_write_2_line(current_temp(), curve_needed.cooling_temp);
       }
@@ -890,7 +812,25 @@ int reflow_control (struct curve curve_needed) {
       } else {
         if ((millis() - stop_time) >= 3000) {
           // turn off oven fan
+          io_call(status_led_g, write, low);
+          delay(100);
+          io_call(status_led_g, write, high);
+          delay(100);
+          io_call(status_led_g, write, low);
+          delay(100);
+          io_call(status_led_g, write, high);
+          delay(100);
+          io_call(status_led_g, write, low);
+          delay(100);
+          io_call(status_led_g, write, high);
+          delay(100);
           io_call(fan, write, low);
+          io_call(ovlight, write, low);
+          io_call(status_led_g, write, high);
+          io_call(status_led_r, write, low);
+          io_call(htr_1, write, low);
+          io_call(htr_2, write, low);
+          delay (1000);
           return 0;          
         }
       }
@@ -906,11 +846,64 @@ int reflow_control (struct curve curve_needed) {
   
   // turn off oven fan
   io_call(fan, write, low);
+  io_call(ovlight, write, low);
+  io_call(status_led_g, write, high);
+  io_call(status_led_r, write, low);
+  io_call(htr_1, write, low);
+  io_call(htr_2, write, low);
   
   return 0;
     
 }
 
+// oven preheat/hold
+int temp_hold () {
+
+  int setpoint = 0;
+  unsigned long start_time;
+
+  disp_write("enter set-point");
+
+  delay(3000);
+
+  while (debounce(ent_btn) == HIGH) {
+    if (debounce(up_btn) == LOW){
+      setpoint++;
+    } else if (debounce(dwn_btn) == LOW) {
+      setpoint--;
+    }
+    
+    Serial.println(setpoint);
+
+    disp_write_2_line(setpoint, setpoint);
+  }
+
+  start_time = millis();
+  io_call(status_led_g, write, low);
+  io_call(status_led_r, write, high);
+
+  disp_write("enter to exit");
+  delay(2000);
+  disp_write("begin pre-heat");
+  delay(3000);
+
+  while (debounce(ent_btn) == HIGH) {
+    if (current_temp() > (setpoint + 10) && current_temp() < (setpoint - 10)) {
+      disp_write("done heating");
+      io_call(ovlight, write, high);
+      delay (1000);
+      io_call(ovlight, write, low);
+    } else {
+      heater_control(pid(setpoint));
+      disp_write_2_line(current_temp(), setpoint);
+    }
+
+  }
+
+  delay(1000);
+  io_call(status_led_r, write, low);
+return 0;
+}
 
 
 
@@ -930,7 +923,7 @@ void setup() {
 
   // start i2c
   Wire.begin(sda.pin_number, scl.pin_number);
-  Wire.setClock(10);
+  Wire.setClock(400000); //
   Serial.println("i2c started");
   
   // io epander init
@@ -944,10 +937,11 @@ void setup() {
   Wire.endTransmission();
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_config_port_1); //port 1
-  Wire.write(0b00001110);
+  Wire.write(0b01110000);
   Wire.endTransmission();
   Serial.println("io expander pin modes set");
 
+  
   // set all io expander outputs low
   Wire.beginTransmission(iox_write_add);
   Wire.write(iox_output_port_0);  //port 0
@@ -958,16 +952,48 @@ void setup() {
   Wire.write(0b00000000);
   Wire.endTransmission();
   Serial.println("io expander all pins set to low");
-
-
+  
+  // fancy boot up seqwince 
+  io_call(status_led_g, write, high);
+  delay(100);
+  io_call(status_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_or, write, high);
+  delay(100);
   io_call(wifi_led_g, write, high);
-  delay(1000);
+  delay(100);
+  io_call(status_led_g, write, low);
+  delay(100);
+  io_call(status_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_or, write, low);
+  delay(100);
   io_call(wifi_led_g, write, low);
-  delay(1000);
+  delay(100);
+  io_call(status_led_g, write, high);
+  delay(100);
+  io_call(status_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_r, write, high);
+  delay(100);
+  io_call(wifi_led_or, write, high);
+  delay(100);
   io_call(wifi_led_g, write, high);
-  delay(1000);
+  delay(100);
+  io_call(status_led_g, write, low);
+  delay(100);
+  io_call(status_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_r, write, low);
+  delay(100);
+  io_call(wifi_led_or, write, low);
+  delay(100);
   io_call(wifi_led_g, write, low);
-  delay(1000);
+
 
 /*
   
@@ -1066,11 +1092,11 @@ void setup() {
   // disply intesity setup
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_global_intensity);
-  Wire.write(0b10000000);  // 9/16 duty cycle  might want to chek if this is right
+  Wire.write(0x01);  // 9/16 duty cycle  might want to chek if this is right
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_global_intensity);
-  Wire.write(0b10000000);  // 9/16 duty cycle
+  Wire.write(0x01);  // 9/16 duty cycle
   Wire.endTransmission();
   Serial.println("display intensity set");
 
@@ -1094,132 +1120,62 @@ void setup() {
   Wire.endTransmission();
   Serial.println("display self test complete");
 
-  disp_write("8888888888888888");
-  //delay(10000);
-  
+
 }
 
-
-
-
 void loop() {
+
+  io_call(status_led_g, write, high);
   
+  static MenuOptions menuOption = CURVE_63_37;
 
-  int menu_opt = 0;
-  int menu_opt_count = 1;  // rember indexing starts at 0 stupid
-
-  // menu controlls
-  if (debounce(up_btn) == LOW) { // incriment menu counter when up btn is pressed
-    menu_opt++;
-    Serial.println("menu up");
-    if (menu_opt > menu_opt_count) { // foldback menu option count 
-      menu_opt = 0;
-      Serial.println("menu up foldback");
-    }
-  } else if (debounce(dwn_btn) == LOW) {  // decriment menu counter when up dwn is pressed
-    menu_opt--;
-    Serial.println("menu dwn");
-    if (menu_opt < 0) { // foldback menu option count
-      menu_opt = menu_opt_count;
-      Serial.println("menu dwn foldback");
-    }
+  // continuously update the display
+  switch (menuOption) {
+    case CURVE_63_37:
+      disp_write("63 37 curve");
+      break;
+    case DISPLAY_IP:
+      disp_write("display ip ?");
+      break;
+    case FIRMWARE_VERSION:
+      disp_write(firmware_v);
+      break;
+    case SET_HOLD:
+      disp_write("set-point hold");
+      break;
+    default:
+      disp_write("error");
+      break;
   }
 
-  // menu main function
-  if (menu_opt == 0) {
-    disp_write("63 37 curve");
-    Serial.println("dispwrite?");
-    delay(1000);
-    if (debounce(ent_btn) == LOW) {
-      reflow_control(curve_63_37);
+  // check for button press
+  if (debounce(up_btn) == LOW) {
+    menuOption = (menuOption == CURVE_63_37) ? DISPLAY_IP : (menuOption == DISPLAY_IP) ? FIRMWARE_VERSION : (menuOption == FIRMWARE_VERSION) ? SET_HOLD : CURVE_63_37;
+  } else if (debounce(ent_btn) == LOW) {
+    switch (menuOption) {
+      case CURVE_63_37:
+        reflow_control(curve_63_37);
+        break;
+      case DISPLAY_IP:
+        //IPAddress ip = WiFi.localIP();
+        //String ip_str = ip.toString();
+        //disp_write((char*)ip_str.c_str());
+        disp_write("192.168.202.202");
+        delay (3000);
+        break;
+      case FIRMWARE_VERSION:
+        disp_write(firmware_v);
+        break;
+      case SET_HOLD:
+        temp_hold();
+        break;
+      default:
+        disp_write("error");
+        break;
     }
-  } else if (menu_opt == 1) {
-    disp_write("display ip?");
-    Serial.println("dispwrite?1");
-    delay (1000);
-    if (debounce(ent_btn) == LOW) {
-      IPAddress ip = WiFi.localIP();
-      String ip_str = ip.toString();
-      disp_write((char*)ip_str.c_str());  // might not work lookin to it????????
-      Serial.println("dispwrite?2");
-      delay (3000);
-    }
-  } else {
-    Serial.println("else");
+  } else if (debounce(dwn_btn) == LOW) {
+    menuOption = (menuOption == DISPLAY_IP) ? CURVE_63_37 : (menuOption == FIRMWARE_VERSION) ? DISPLAY_IP : (menuOption == DISPLAY_IP) ? SET_HOLD : FIRMWARE_VERSION;
   }
-  
-  Serial.println(HEX, read_current_io_state(1));
-
-  Serial.println("main loop");
-  
-  Serial.println(current_temp());
-  delay (1000);
-  Serial.println(io_call(ent_btn, read, read_mode));
-  io_call(wifi_led_g, write, low);
-
-
-
-
-
-  byte error, address;
-  int nDevices;
- 
-  Serial.println("Scanning...");
- 
-  nDevices = 0;
-  for(address = 1; address < 127; address++ )
-  {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the address.
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
- 
-    if (error == 0)
-    {
-      Serial.print("I2C device found at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.print(address,HEX);
-      Serial.println("  !");
- 
-      nDevices++;
-    }
-    else if (error==4)
-    {
-      Serial.print("Unknown error at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.println(address,HEX);
-    }    
-  }
-  if (nDevices == 0)
-    Serial.println("No I2C devices found\n");
-  else
-    Serial.println("done\n");
- 
-  delay(5000);           // wait 5 seconds for next scan
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
