@@ -37,7 +37,7 @@ const char* password = "xxxx";
 
 ESP8266WebServer server(80);
 
-char* firmware_v = "firmware v 0.1";
+char* firmware_v = "firmware v 0.2";
 
 //iox defines
 const uint8_t iox_read_add = 0x21;
@@ -83,7 +83,6 @@ struct pin htr_1 = {0b0, 0, 13, true};
 struct pin htr_2 = {0b0, 0, 12, true};
 struct pin fan = {0b0, 0, 5, true};
 struct pin ovlight = {0b10000000, 1, 20, false};
-// struct pin onboard_led = {0b0, 0, 2, true};
 struct pin wifi_led_g = {0b00001000, 1, 16, false};
 struct pin wifi_led_or = {0b00000100, 1, 15, false};
 struct pin wifi_led_r = {0b00000010, 1, 14, false};
@@ -460,13 +459,7 @@ void disp_blank() {
 // to_write: string to be witten to the display
 // currently only supports max 16 cahricter input as of right now will add sepping at a later time
 char disp_write(char* to_write) {
-/*
-  if (to_write == prev_disp) {
-    return 0;
-  } else {
-    prev_disp = to_write; //i think this is un nneded????????
-  }
-*/
+
   disp_blank();
 
   // defines
@@ -1034,13 +1027,11 @@ void setup() {
   
 */
 
-  // might need to pull out of shutdown mode before self address??????????????
-
+  // begin display init
   Wire.beginTransmission(disp_base_add_w);
   Wire.write(disp_shutdown);
   Wire.write(disp_up_rst);
   Wire.endTransmission();
-
 
   // display self address command
   Wire.beginTransmission(disp_base_add_w);
@@ -1049,10 +1040,6 @@ void setup() {
   Wire.endTransmission();
   Serial.println("display self addressed");
 
-  
-
-
-  
   // pull display 1 out of shutdown mode
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_shutdown);
