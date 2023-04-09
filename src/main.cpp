@@ -145,6 +145,9 @@ struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 235, 210000
 
 
 // 7 seg diplay defines
+
+uint8_t disp_intense = 0x06; // set this number in hex to set 7 segment display brightness
+
 const uint8_t disp_base_add_w = 0b00000000;
 const uint8_t disp_base_add_r = 0b00000001;
 const uint8_t disp_1_add_w = 0x02;
@@ -1079,11 +1082,11 @@ void setup() {
   // disply intesity setup
   Wire.beginTransmission(disp_1_add_w);
   Wire.write(disp_global_intensity);
-  Wire.write(0x01);  // 9/16 duty cycle  might want to chek if this is right
+  Wire.write(disp_intense);
   Wire.endTransmission();
   Wire.beginTransmission(disp_2_add_w);
   Wire.write(disp_global_intensity);
-  Wire.write(0x01);  // 9/16 duty cycle
+  Wire.write(disp_intense);
   Wire.endTransmission();
   Serial.println("display intensity set");
 
