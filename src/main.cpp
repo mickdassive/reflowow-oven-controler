@@ -143,10 +143,14 @@ struct curve{
 // cuve setup {preheat_time, preheat_temp, soak_time, soak_temp, ramp_to_reflow_time, ramp_to_reflow_temp, reflow_time, reflow_temp, cooling_time, cooling_temp, end_time}
 struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 235, 210000, 25, 327000};
 
+// heater histores vars
+int last_htr_state;
+int historesis_time = 1000; // time in mils
+unsigned long T_of_last_htr_state = 0;
 
 // 7 seg diplay defines
 
-uint8_t disp_intense = 0x06; // set this number in hex to set 7 segment display brightness
+uint8_t disp_intense = 0xff; // set this number in hex to set 7 segment display brightness
 
 const uint8_t disp_base_add_w = 0b00000000;
 const uint8_t disp_base_add_r = 0b00000001;
@@ -704,16 +708,25 @@ void disp_write_2_line(float line_1, float line_2) {
 // heater control
 // input: takes a float input from -1 to 1 and based on that turns on or off the heaters
 void heater_control (float input) {
-  if (input > 0 && input < 0.5) {
-    io_call (htr_1, write, high);
-    io_call (htr_2, write, low);
-  } else if (input > 0.5) {
-    io_call (htr_1, write, high);
-    io_call (htr_2, write, high);
-  } else if (input < 0) {
-    io_call (htr_1, write, low);
-    io_call (htr_2, write, low);
+  if ((millis() - (T_of_last_htr_state)) < historesis_time) {
+    
+  } else {
+    if (input > 0 && input < 0.5) { // htr state 1
+      io_call (htr_1, write, high);
+      io_call (htr_2, write, low);
+      last_htr_state = 1;
+    } else if (input > 0.5) {  // htr state 2
+      io_call (htr_1, write, high);
+      io_call (htr_2, write, high);
+      last_htr_state = 2;
+    } else if (input < 0) {  // htr state 0
+      io_call (htr_1, write, low);
+      io_call (htr_2, write, low);
+      last_htr_state = 0;
+    }
+    T_of_last_htr_state = millis();
   }
+  
 
 }
 
@@ -736,6 +749,24 @@ int reflow_control (struct curve curve_needed) {
   // exit buttion defines
   unsigned long stop_time;
   bool exit_state = false;
+
+  // oven pre heat and wait for laoding
+
+  while (debounce(ent_btn) == HIGH) {
+    if (current_temp() < curve_needed.preheat_temp) {
+      disp_write("please wait");
+      delay(500);
+      disp_write("prehaeting");
+      delay(500);
+    } else {
+      disp_write("preheat complete");
+      delay(500);
+      disp_write("press enter");
+      delay (500);
+      disp_write("when oven loaded");
+      delay (500);
+    }
+  }
   
   
   // control loop
@@ -807,7 +838,7 @@ int reflow_control (struct curve curve_needed) {
         exit_state = true;
       } else {
         if ((millis() - stop_time) >= 3000) {
-          // turn off oven fan
+          //return to defult state
           io_call(status_led_g, write, low);
           delay(100);
           io_call(status_led_g, write, high);
@@ -878,6 +909,8 @@ int temp_hold () {
   io_call(status_led_g, write, low);
   io_call(status_led_r, write, high);
 
+  io_call(fan, write, high);
+
   disp_write("enter to exit");
   delay(2000);
   disp_write("begin pre-heat");
@@ -898,6 +931,8 @@ int temp_hold () {
 
   delay(1000);
   io_call(status_led_r, write, low);
+
+  io_call(fan, write, low);
 return 0;
 }
 
