@@ -123,7 +123,7 @@ float Kd = 0.5;  //derivative
 float DT = 0.01; //pid measurement time (seconds)
 
 // reflow cureve defines
-// times define the START time of a given curve segment
+// times define the total durration of a given curve segment
 // temp is the tempiture setpoint that the oven shold reath durring a given curve segment
 struct curve{
   int preheat_time;  // miliseconds
@@ -141,7 +141,8 @@ struct curve{
 };
 
 // cuve setup {preheat_time, preheat_temp, soak_time, soak_temp, ramp_to_reflow_time, ramp_to_reflow_temp, reflow_time, reflow_temp, cooling_time, cooling_temp, end_time}
-struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 235, 210000, 25, 327000};
+//struct curve curve_63_37 = {0, 100, 30000, 150, 120000, 183, 150000, 240, 210000, 25, 327000}; old dont use just for refrance
+struct curve curve_63_37 = {0, 100, 90000, 150, 30000, 183, 30000, 240, 30000, 25, 327000};
 
 // heater histores vars
 int last_htr_state;
@@ -745,10 +746,20 @@ int reflow_control (struct curve curve_needed) {
   // defines
   unsigned long stop_time;
   bool exit_state = false;
-  unsigned long cooling_time = 0;
+  //unsigned long cooling_time = 0;
   bool exit_trigger = false;
-  bool reflow_complete = false;
-  unsigned long reflow_stop_time = 0;
+  //bool reflow_complete = false;
+  //unsigned long reflow_stop_time = 0;
+  unsigned long pre_heat_time = 0;
+  bool pre_heat_complete = false;
+  unsigned long soak_time = 0;
+  bool soak_compltete = false;
+  unsigned long ramp_time = 0;
+  bool ramp_complete = false;
+  unsigned long reflow_time = 0;
+  bool relow_complete = false;
+  unsigned long cooling_time = 0;
+  bool cooling_compltete = false; //idk if i acc need this
 
   // oven pre heat and wait for laoding
 
@@ -798,15 +809,20 @@ int reflow_control (struct curve curve_needed) {
 
 
     
-    if ((millis() - start_time) > curve_needed.preheat_time  && (millis() - start_time) < curve_needed.soak_time) {  // preheat stage
+    if (pre_heat_complete == false) {  // preheat stage
       heater_control(pid(curve_needed.preheat_temp));
-      Serial.println("preheat stage?");
       if ((millis() - start_time) < 3000){
         disp_write("pre-heat stage");
       } else {
         disp_write_2_line(current_temp(), curve_needed.preheat_temp);
       }
-    } else if ((millis() - start_time) > curve_needed.soak_time && (millis() - start_time) < curve_needed.ramp_to_reflow_time) {  // soak stage
+      if ((curve_needed.preheat_temp < current_temp()) && (pre_heat_time == 0)) {
+        pre_heat_time = millis();
+      }
+      if (((millis() - pre_heat_time) > curve_needed.preheat_time) && (pre_heat_time != 0)){
+        pre_heat_complete = true;
+      }
+    } else if (soak_compltete == false && pre_heat_complete == true) {  // soak stage
       heater_control(pid(curve_needed.soak_temp));
       if ((millis() - start_time) < (curve_needed.soak_time + 3000)){
         disp_write("soak stage");
@@ -817,6 +833,12 @@ int reflow_control (struct curve curve_needed) {
         }
       } else {
         disp_write_2_line(current_temp(), curve_needed.soak_temp);
+      }
+      if ((curve_needed.soak_temp > current_temp()) && (soak_time == 0)){
+        soak_time = millis();
+      }
+      if (((millis - soak_time) > curve_needed.soak_time) && ( soak_time != 0)) {
+        soak_compltete = true;
       }
     } else if ((millis() - start_time) > curve_needed.ramp_to_reflow_time && (millis() - start_time) < curve_needed.reflow_time) {  // ramp to reflow stage
       heater_control(pid(curve_needed.ramp_to_reflow_temp));
@@ -847,7 +869,7 @@ int reflow_control (struct curve curve_needed) {
       if ((current_temp() > curve_needed.reflow_temp) && (reflow_stop_time == 0)) {
         reflow_stop_time = millis();
       }
-      if (((millis() - reflow_stop_time) >= 15000) && (reflow_stop_time != 0)) {
+      if (((millis() - reflow_stop_time) >= 30000) && (reflow_stop_time != 0)) {
         reflow_complete = true;
       }
     } else if ((current_temp() > curve_needed.cooling_temp) && (reflow_complete == true)) {  // cooling stage
