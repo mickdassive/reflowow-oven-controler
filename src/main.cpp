@@ -757,11 +757,13 @@ int reflow_control (struct curve curve_needed) {
   unsigned long ramp_time = 0;
   bool ramp_complete = false;
   unsigned long reflow_time = 0;
-  bool relow_complete = false;
+  bool reflow_complete = false;
   unsigned long cooling_time = 0;
   bool cooling_compltete = false; //idk if i acc need this
 
   // oven pre heat and wait for laoding
+
+  /*
 
   delay (500);
 
@@ -784,6 +786,7 @@ int reflow_control (struct curve curve_needed) {
     }
   }
 
+
   // blink lights between stages
   io_call(ovlight, write, high);
   delay(200);
@@ -798,6 +801,8 @@ int reflow_control (struct curve curve_needed) {
   io_call(ovlight, write, low);
   delay(200);
   io_call(ovlight, write, high);
+
+  */
   
   
   // start timer
@@ -824,11 +829,11 @@ int reflow_control (struct curve curve_needed) {
       }
     } else if (soak_compltete == false && pre_heat_complete == true) {  // soak stage
       heater_control(pid(curve_needed.soak_temp));
-      if ((millis() - start_time) < (curve_needed.soak_time + 3000)){
+      if ((millis() - (pre_heat_time + curve_needed.preheat_time)) < 3000){
         disp_write("soak stage");
-        if ((millis() - start_time) < (curve_needed.soak_time + 1000)) {
+        if ((millis() - (pre_heat_time + curve_needed.preheat_time)) < 1000) {
           io_call(ovlight, write, low);
-        } else if ((millis() - start_time) < (curve_needed.soak_time + 2000)) {
+        } else if ((millis() - (pre_heat_time + curve_needed.preheat_time)) < 2000) {
           io_call(ovlight, write, high);
         }
       } else {
@@ -837,60 +842,66 @@ int reflow_control (struct curve curve_needed) {
       if ((curve_needed.soak_temp > current_temp()) && (soak_time == 0)){
         soak_time = millis();
       }
-      if (((millis - soak_time) > curve_needed.soak_time) && ( soak_time != 0)) {
+      if (((millis() - soak_time) > curve_needed.soak_time) && ( soak_time != 0)) {
         soak_compltete = true;
       }
-    } else if ((millis() - start_time) > curve_needed.ramp_to_reflow_time && (millis() - start_time) < curve_needed.reflow_time) {  // ramp to reflow stage
+    } else if (pre_heat_complete == true && soak_compltete == true && ramp_complete == false) {  // ramp to reflow stage
       heater_control(pid(curve_needed.ramp_to_reflow_temp));
-      if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 3000)){
+      if ((millis() - (soak_time + curve_needed.soak_time)) < 3000){
         disp_write("ramp stage");
-        if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 1000)) {
+        if ((millis() - (soak_time + curve_needed.soak_time)) < 1000) {
           io_call(ovlight, write, low);
-        } else if ((millis() - start_time) < (curve_needed.ramp_to_reflow_time + 2000)) {
+        } else if ((millis() - (soak_time + curve_needed.soak_time)) < 2000) {
           io_call(ovlight, write, high);
         }
       } else {
         disp_write_2_line(current_temp(), curve_needed.ramp_to_reflow_temp);
       }
-    } else if (((millis() - start_time) > curve_needed.reflow_time) && (current_temp() < curve_needed.reflow_temp) && (reflow_complete == false)) {  // reflow stage
+      if ((curve_needed.ramp_to_reflow_temp > current_temp()) && (ramp_time == 0)) {
+        ramp_time = millis();
+      }
+      if (((millis() - ramp_time) > curve_needed.ramp_to_reflow_time) && (ramp_time != 0)){
+        ramp_complete = true;
+      }
+    } else if (pre_heat_complete == true && soak_compltete == true && ramp_complete && reflow_complete == false) {  // reflow stage
       heater_control(pid(curve_needed.reflow_temp));
       Serial.println("reflow stage");
       
-      if ((millis() - start_time) < (curve_needed.reflow_time + 3000)){
+      if ((millis() - (ramp_time + curve_needed.ramp_to_reflow_time)) < 3000){
         disp_write("reflow stage");
-        if ((millis() - start_time) < (curve_needed.reflow_time + 1000)) {
+        if ((millis() - (ramp_time + curve_needed.ramp_to_reflow_time)) < 1000) {
           io_call(ovlight, write, low);
-        } else if ((millis() - start_time) < (curve_needed.reflow_time + 2000)) {
+        } else if ((millis() - (ramp_time + curve_needed.ramp_to_reflow_time)) < 2000) {
           io_call(ovlight, write, high);
         }
       } else {
         disp_write_2_line(current_temp(), curve_needed.reflow_temp);
       }
-      if ((current_temp() > curve_needed.reflow_temp) && (reflow_stop_time == 0)) {
-        reflow_stop_time = millis();
+      if ((current_temp() > curve_needed.reflow_temp) && (reflow_time == 0)) {
+        reflow_time = millis();
       }
-      if (((millis() - reflow_stop_time) >= 30000) && (reflow_stop_time != 0)) {
+      if (((millis() - reflow_time) > curve_needed.reflow_time) && (reflow_time != 0)) {
         reflow_complete = true;
       }
-    } else if ((current_temp() > curve_needed.cooling_temp) && (reflow_complete == true)) {  // cooling stage
+    } else if (pre_heat_complete == true && soak_compltete == true && ramp_complete == true && reflow_complete == true && cooling_compltete == false) {  // cooling stage
       heater_control(pid(curve_needed.cooling_temp));
       Serial.println("cooling stage?");
       if (cooling_time = 0) {
         cooling_time = millis();
       }
       
-      if ((millis() - start_time) < (cooling_time + 3000)){
+      if ((millis() - (reflow_time + curve_needed.reflow_time)) < 3000){
         disp_write("cooling stage");
-        if ((millis() - start_time) < (cooling_time + 1000)) {
+        if ((millis() - (reflow_time + curve_needed.reflow_time)) < 1000) {
           io_call(ovlight, write, low);
-        } else if ((millis() - start_time) < (cooling_time + 2000)) {
+        } else if ((millis() - (reflow_time + curve_needed.reflow_time)) < 2000) {
           io_call(ovlight, write, high);
         }
       } else {
         disp_write_2_line(current_temp(), curve_needed.cooling_temp);
       }
       
-    } else if (reflow_complete == true) {
+    } else if (pre_heat_complete == true && soak_compltete == true && ramp_complete == true && reflow_complete == true && cooling_compltete == true) {
       exit_trigger = true;
     } else {
 
@@ -972,6 +983,7 @@ int temp_hold () {
   start_time = millis();
   io_call(status_led_g, write, low);
   io_call(status_led_r, write, high);
+  io_call(ovlight, write, high);
 
   io_call(fan, write, high);
 
@@ -995,7 +1007,7 @@ int temp_hold () {
 
   delay(1000);
   io_call(status_led_r, write, low);
-
+  io_call(ovlight, write, low);
   io_call(fan, write, low);
 return 0;
 }
